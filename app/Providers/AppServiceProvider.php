@@ -20,8 +20,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        Gate::guessPolicyNamesUsing(function (string $modelClass) {
-            return str_replace('Models', 'Policies', $modelClass) . 'Policy';
-        });
+        // Gate::guessPolicyNamesUsing(function (string $modelClass) {
+        //     return str_replace('Models', 'Policies', $modelClass) . 'Policy';
+        // });
     }
 }
