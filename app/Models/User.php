@@ -81,26 +81,6 @@ class User extends Authenticatable implements FilamentUser, HasAvatar, HasMedia,
             ->logOnly(['*']);
     }
 
-    /**
-     * Get all contents authored by this user.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
-     */
-    public function contents(): HasMany
-    {
-        return $this->hasMany(Content::class, 'author_id');
-    }
-
-    /**
-     * Get all content revisions created by this user.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
-     */
-    public function contentRevisions(): HasMany
-    {
-        return $this->hasMany(ContentRevision::class, 'created_by');
-    }
-
     public function canAccessPanel(Panel $panel): bool
 
     {
