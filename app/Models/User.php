@@ -10,6 +10,7 @@ use Filament\Models\Contracts\HasName;
 use Filament\Panel;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -29,8 +30,17 @@ class User extends Authenticatable implements FilamentUser, HasAvatar, HasMedia,
      */
     protected $fillable = [
         'username',
+        'first_name',
+        'last_name',
         'email',
+        'is_admin',
+        'is_active',
+        'timezone',
+        'preferences',
+        'avatar_url',
         'password',
+        'created_by',
+        'updated_by',
     ];
 
     /**
@@ -52,8 +62,33 @@ class User extends Authenticatable implements FilamentUser, HasAvatar, HasMedia,
     {
         return [
             'email_verified_at' => 'datetime',
+            'last_login_at' => 'datetime',
+            'is_admin' => 'boolean',
+            'is_active' => 'boolean',
+            'preferences' => 'array',
             'password' => 'hashed',
+            'deleted_at' => 'datetime',
         ];
+    }
+
+    /**
+     * Get all contents authored by this user.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function contents(): HasMany
+    {
+        return $this->hasMany(Content::class, 'author_id');
+    }
+
+    /**
+     * Get all content revisions created by this user.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function contentRevisions(): HasMany
+    {
+        return $this->hasMany(ContentRevision::class, 'created_by');
     }
 
     public function canAccessPanel(Panel $panel): bool
