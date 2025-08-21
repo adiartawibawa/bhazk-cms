@@ -22,25 +22,6 @@ return new class extends Migration
          */
 
         /**
-         * ROLES & USERS
-         * One-to-Many Relationship: A single role can be assigned to many users.
-         */
-        Schema::create('roles', function (Blueprint $table) {
-            $table->uuid('id')->primary();
-            $table->string('name')->unique();
-            $table->timestamps();
-        });
-
-        Schema::create('users', function (Blueprint $table) {
-            $table->uuid('id')->primary();
-            $table->string('username')->unique();
-            $table->string('email')->unique();
-            $table->string('password');
-            $table->foreignUuid('role_id')->constrained('roles')->cascadeOnDelete();
-            $table->timestamps();
-        });
-
-        /**
          * CONTENTS (pointer/metadata) — without FK to revisions yet
          * The foreign keys for revisions will be added after the content_revisions table is created.
          */
@@ -240,7 +221,5 @@ return new class extends Migration
 
         Schema::dropIfExists('content_revisions');
         Schema::dropIfExists('contents');
-        Schema::dropIfExists('users');
-        Schema::dropIfExists('roles');
     }
 };

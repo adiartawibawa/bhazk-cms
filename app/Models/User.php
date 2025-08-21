@@ -6,6 +6,7 @@ namespace App\Models;
 
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Models\Contracts\HasAvatar;
+use Filament\Models\Contracts\HasName;
 use Filament\Panel;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -16,7 +17,7 @@ use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\Permission\Traits\HasRoles;
 
-class User extends Authenticatable implements FilamentUser, HasAvatar, HasMedia
+class User extends Authenticatable implements FilamentUser, HasAvatar, HasMedia, HasName
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable, HasUuids, HasRoles, InteractsWithMedia, SoftDeletes;
@@ -27,7 +28,7 @@ class User extends Authenticatable implements FilamentUser, HasAvatar, HasMedia
      * @var list<string>
      */
     protected $fillable = [
-        'name',
+        'username',
         'email',
         'password',
     ];
@@ -70,8 +71,7 @@ class User extends Authenticatable implements FilamentUser, HasAvatar, HasMedia
     {
         // Menggunakan Gravatar atau URL default
         $hash = md5(strtolower(trim($this->email)));
-        $default = "https://www.gravatar.com/avatar/{$hash}?d=identicon";
 
-        return $this->avatar_url ?: $default;
+        return $this->avatar_url ?: "https://www.gravatar.com/avatar/{$hash}?d=identicon";
     }
 }

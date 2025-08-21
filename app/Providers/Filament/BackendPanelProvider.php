@@ -21,7 +21,6 @@ use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 use Rmsramos\Activitylog\ActivitylogPlugin;
-use ShuvroRoy\FilamentSpatieLaravelHealth\FilamentSpatieLaravelHealthPlugin;
 
 class BackendPanelProvider extends PanelProvider
 {
@@ -71,7 +70,6 @@ class BackendPanelProvider extends PanelProvider
                     ->navigationGroup('Activity Log')
                     ->navigationCountBadge(true)
                     ->navigationIcon('heroicon-o-queue-list'),
-                FilamentSpatieLaravelHealthPlugin::make(),
                 FilamentShieldPlugin::make()
                     ->gridColumns([
                         'default' => 1,
