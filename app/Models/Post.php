@@ -47,17 +47,25 @@ class Post extends Model implements HasMedia
         'body'
     ];
 
-    protected $casts = [
-        'is_published' => 'boolean',
-        'is_trend' => 'boolean',
-        'likes' => 'float',
-        'views' => 'float',
-        'meta' => 'array',
-        'published_at' => 'datetime',
-    ];
+    /**
+     * Get the attributes that should be cast.
+     *
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'is_published' => 'boolean',
+            'is_trend' => 'boolean',
+            'likes' => 'float',
+            'views' => 'float',
+            'meta' => 'array',
+            'published_at' => 'datetime',
+        ];
+    }
 
     protected $dates = [
-        'published_at',
+        // 'published_at',
         'created_at',
         'updated_at'
     ];

@@ -3,117 +3,83 @@
 namespace App\Services\Contracts;
 
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Cookie;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Str;
 
-/**
- *
- * Class CmsType
- * @package App\Services\Contracts
- * @property string $key
- * @property string $label
- * @property string $icon
- * @property string $color
- * @method static make(string $key)
- * @method key(string $key)
- * @method label(string $label)
- * @method icon(string $icon)
- * @method color(string $color)
- *
- */
 class CmsType
 {
-    /**
-     * @var string
-     */
     public string $key;
-    /**
-     * @var string
-     */
     public string $label;
-    /**
-     * @var string
-     */
     public ?string $icon = null;
-    /**
-     * @var string
-     */
     public ?string $color = null;
-    /**
-     * @var array
-     */
     public array $sub = [];
 
-    /**
-     * @param string $key
-     * @return void
-     */
     public static function make(string $key): self
     {
-        return (new self)->key($key)->label(Str::of($key)->title()->toString());
+        return (new self)->key($key);
     }
 
-    /**
-     * @param string $key
-     * @return $this
-     */
     public function key(string $key): self
     {
         $this->key = $key;
+
+        // Auto-load dari config jika ada
+        $configTypes = Config::get('cms-types.types', []);
+        if (isset($configTypes[$key])) {
+            $config = $configTypes[$key];
+
+            $this->label(trans($config['label'] ?? $key));
+            $this->icon($config['icon'] ?? null);
+            $this->color($config['color'] ?? null);
+
+            if (isset($config['sub']) && is_array($config['sub'])) {
+                $subTypes = [];
+                foreach ($config['sub'] as $subKey => $subConfig) {
+                    $subTypes[] = (new self())
+                        ->key($subKey)
+                        ->label(trans($subConfig['label'] ?? $subKey))
+                        ->icon($subConfig['icon'] ?? null)
+                        ->color($subConfig['color'] ?? null);
+                }
+                $this->sub($subTypes);
+            }
+        } else {
+            // Fallback jika tidak ada di config
+            $this->label(Str::of($key)->title()->toString());
+        }
+
         return $this;
     }
 
-    /**
-     * @param string $label
-     * @return $this
-     */
     public function label(string $label): self
     {
         $this->label = $label;
         return $this;
     }
 
-    /**
-     * @param string $icon
-     * @return $this
-     */
-    public function icon(string $icon): self
+    public function icon(?string $icon): self
     {
         $this->icon = $icon;
         return $this;
     }
 
-    /**
-     * @param string $color
-     * @return $this
-     */
-    public function color(string $color): self
+    public function color(?string $color): self
     {
         $this->color = $color;
         return $this;
     }
 
-    /**
-     * @param array $sub
-     * @return $this
-     */
     public function sub(array $sub): self
     {
         $this->sub = $sub;
         return $this;
     }
 
-    /**
-     * @return Collection
-     */
     public function getSub(): Collection
     {
         return collect($this->sub);
     }
 
-    /**
-     * @return array
-     */
     public function toArray()
     {
         return [
