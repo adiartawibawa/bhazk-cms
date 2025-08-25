@@ -10,6 +10,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Spatie\Translatable\HasTranslations;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Spatie\Activitylog\LogOptions;
+use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 
@@ -17,6 +19,7 @@ class Content extends Model implements HasMedia
 {
     use HasFactory, SoftDeletes, HasUuids, HasTranslations;
     use InteractsWithMedia;
+    use LogsActivity;
 
     /**
      * The table associated with the model.
@@ -71,6 +74,72 @@ class Content extends Model implements HasMedia
     public const STATUS_ARCHIVED = 'archived';
 
     /**
+     * Configure the activity log options.
+     */
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logOnly([
+                'content_type_id',
+                'title',
+                'slug',
+                'status',
+                'published_at',
+                'author_id',
+                'editor_id',
+                'featured',
+                'commentable',
+            ])
+            ->logOnlyDirty()
+            ->dontSubmitEmptyLogs()
+            ->logExcept(['metadata', 'body', 'excerpt', 'current_version', 'comment_count'])
+            ->setDescriptionForEvent(function (string $eventName) {
+                return match ($eventName) {
+                    'created' => 'Content created',
+                    'updated' => 'Content updated',
+                    'deleted' => 'Content deleted',
+                    'restored' => 'Content restored',
+                    default => "Content {$eventName}",
+                };
+            });
+    }
+
+    /**
+     * Customize the activity log properties.
+     */
+    public function tapActivity(Activity $activity, string $eventName)
+    {
+        $activity->properties = $activity->properties->merge([
+            'content_id' => $this->id,
+            'content_type' => $this->contentType->name ?? 'Unknown',
+            'version' => $this->current_version,
+            'ip_address' => request()->ip(),
+            'user_agent' => request()->userAgent(),
+        ]);
+
+        // Tambahkan perubahan spesifik untuk update
+        if ($eventName === 'updated') {
+            $changes = [];
+            $significantFields = ['title', 'status', 'featured', 'commentable'];
+
+            foreach ($significantFields as $field) {
+                if ($this->wasChanged($field)) {
+                    $changes[$field] = [
+                        'old' => $this->getOriginal($field),
+                        'new' => $this->getAttribute($field),
+                    ];
+                }
+            }
+
+            if (!empty($changes)) {
+                $activity->properties = $activity->properties->merge([
+                    'changes' => $changes,
+                ]);
+            }
+        }
+    }
+
+    /**
      * Get the content type that owns the content.
      */
     public function contentType(): BelongsTo
@@ -119,7 +188,7 @@ class Content extends Model implements HasMedia
      */
     public function revisions(): HasMany
     {
-        return $this->hasMany(ContentRevision::class);
+        return $this->hasMany(ContentRevision::class)->orderBy('version', 'desc');
     }
 
     /**

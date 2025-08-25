@@ -89,7 +89,6 @@ return new class extends Migration
 
         // ================== Content Categories Pivot ==================
         Schema::create('content_categories', function (Blueprint $table) {
-            $table->uuid('id')->primary();
             $table->uuid('content_id');
             $table->uuid('category_id');
             $table->unsignedInteger('sort_order')->default(0);
@@ -99,7 +98,7 @@ return new class extends Migration
             $table->foreign('content_id')->references('id')->on('contents')->onDelete('cascade');
             $table->foreign('category_id')->references('id')->on('categories')->onDelete('cascade');
 
-            $table->unique(['content_id', 'category_id']);
+            $table->primary(['content_id', 'category_id']);
             $table->index(['category_id', 'content_id']);
             $table->index('is_primary');
             $table->index('sort_order');
@@ -107,7 +106,6 @@ return new class extends Migration
 
         // ================== Content Tags Pivot ==================
         Schema::create('content_tags', function (Blueprint $table) {
-            $table->uuid('id')->primary();
             $table->uuid('content_id');
             $table->uuid('tag_id');
             $table->unsignedInteger('sort_order')->default(0);
@@ -116,7 +114,7 @@ return new class extends Migration
             $table->foreign('content_id')->references('id')->on('contents')->onDelete('cascade');
             $table->foreign('tag_id')->references('id')->on('tags')->onDelete('cascade');
 
-            $table->unique(['content_id', 'tag_id']);
+            $table->primary(['content_id', 'tag_id']);
             $table->index(['tag_id', 'content_id']);
             $table->index('sort_order');
         });
