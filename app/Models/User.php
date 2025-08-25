@@ -107,6 +107,46 @@ class User extends Authenticatable implements FilamentUser, HasAvatar, HasMedia,
         return $this->belongsTo(User::class, 'updated_by');
     }
 
+    /**
+     * Get the contents authored by this user.
+     */
+    public function authoredContents(): HasMany
+    {
+        return $this->hasMany(Content::class, 'author_id');
+    }
+
+    /**
+     * Get the contents edited by this user.
+     */
+    public function editedContents(): HasMany
+    {
+        return $this->hasMany(Content::class, 'editor_id');
+    }
+
+    /**
+     * Get the content revisions created by this user.
+     */
+    public function contentRevisions(): HasMany
+    {
+        return $this->hasMany(ContentRevision::class, 'author_id');
+    }
+
+    /**
+     * Get the content likes by this user.
+     */
+    public function contentLikes(): HasMany
+    {
+        return $this->hasMany(ContentLike::class);
+    }
+
+    /**
+     * Get the comments by this user.
+     */
+    public function contentComments(): HasMany
+    {
+        return $this->hasMany(ContentComment::class);
+    }
+
     public function getFilamentName(): string
     {
         return "{$this->first_name} {$this->last_name}" ?: $this->username;
