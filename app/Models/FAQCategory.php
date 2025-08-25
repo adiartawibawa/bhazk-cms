@@ -9,14 +9,14 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Spatie\Translatable\HasTranslations;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class ContentType extends Model
+class FAQCategory extends Model
 {
     use HasFactory, SoftDeletes, HasUuids, HasTranslations;
 
     /**
      * The table associated with the model.
      */
-    protected $table = 'content_types';
+    protected $table = 'faq_categories';
 
     /**
      * The attributes that are mass assignable.
@@ -24,7 +24,7 @@ class ContentType extends Model
     protected $fillable = [
         'name',
         'slug',
-        'fields',
+        'sort_order',
         'is_active',
     ];
 
@@ -39,16 +39,32 @@ class ContentType extends Model
     protected function casts(): array
     {
         return [
-            'fields' => 'array',
+            'sort_order' => 'integer',
             'is_active' => 'boolean',
         ];
     }
 
     /**
-     * Get the contents for this content type.
+     * Get the FAQs for the category.
      */
-    public function contents(): HasMany
+    public function faqs(): HasMany
     {
-        return $this->hasMany(Content::class);
+        return $this->hasMany(FAQ::class);
+    }
+
+    /**
+     * Scope a query to only include active categories.
+     */
+    public function scopeActive($query)
+    {
+        return $query->where('is_active', true);
+    }
+
+    /**
+     * Scope a query to order categories by sort order.
+     */
+    public function scopeOrdered($query)
+    {
+        return $query->orderBy('sort_order', 'asc');
     }
 }

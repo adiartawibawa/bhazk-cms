@@ -2,81 +2,169 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\HasOne;
 use Spatie\Translatable\HasTranslations;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Content extends Model
 {
-    use HasUuids, HasTranslations;
+    use HasFactory, SoftDeletes, HasUuids, HasTranslations;
 
-    const STATUS_DRAFT = 'draft';
+    /**
+     * The table associated with the model.
+     */
+    protected $table = 'contents';
 
-    const STATUS_PUBLISHED = 'published';
-
-    const STATUS_ARCHIVED = 'archived';
-
+    /**
+     * The attributes that are mass assignable.
+     */
     protected $fillable = [
         'content_type_id',
         'title',
         'slug',
+        'excerpt',
         'body',
-        'data',
+        'metadata',
         'status',
         'published_at',
-        'user_id',
+        'author_id',
+        'editor_id',
+        'current_version',
+        'comment_count',
+        'featured',
+        'commentable',
     ];
 
-    public array $translatable = [
-        'title',
-        'slug',
-        'body'
-    ];
+    /**
+     * The attributes that are translatable.
+     */
+    public $translatable = ['title', 'slug', 'excerpt', 'body'];
 
+    /**
+     * Get the attributes that should be cast.
+     */
     protected function casts(): array
     {
         return [
-            'data' => 'array',
+            'metadata' => 'array',
             'published_at' => 'datetime',
+            'featured' => 'boolean',
+            'commentable' => 'boolean',
+            'current_version' => 'integer',
+            'comment_count' => 'integer',
         ];
     }
 
+    /**
+     * The possible status values for content.
+     */
+    public const STATUS_DRAFT = 'draft';
+    public const STATUS_PUBLISHED = 'published';
+    public const STATUS_ARCHIVED = 'archived';
+
+    /**
+     * Get the content type that owns the content.
+     */
     public function contentType(): BelongsTo
     {
-        return $this->belongsTo(ContentType::class, 'content_type_id');
+        return $this->belongsTo(ContentType::class);
     }
 
+    /**
+     * Get the author of the content.
+     */
     public function author(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'user_id');
+        return $this->belongsTo(User::class, 'author_id');
     }
 
+    /**
+     * Get the editor of the content.
+     */
+    public function editor(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'editor_id');
+    }
+
+    /**
+     * Get the categories associated with the content.
+     */
     public function categories(): BelongsToMany
     {
-        return $this->belongsToMany(Category::class, 'content_category');
+        return $this->belongsToMany(Category::class, 'content_categories')
+            ->withPivot('sort_order', 'is_primary')
+            ->withTimestamps();
     }
 
+    /**
+     * Get the tags associated with the content.
+     */
     public function tags(): BelongsToMany
     {
-        return $this->belongsToMany(Tag::class, 'content_tag');
+        return $this->belongsToMany(Tag::class, 'content_tags')
+            ->withPivot('sort_order')
+            ->withTimestamps();
     }
 
+    /**
+     * Get the revisions for the content.
+     */
     public function revisions(): HasMany
     {
         return $this->hasMany(ContentRevision::class);
     }
 
-    public function metrics(): HasOne
+    /**
+     * Get the metrics for the content.
+     */
+    public function metrics(): HasMany
     {
-        return $this->hasOne(ContentMetric::class);
+        return $this->hasMany(ContentMetric::class);
     }
 
+    /**
+     * Get the likes for the content.
+     */
     public function likes(): HasMany
     {
         return $this->hasMany(ContentLike::class);
+    }
+
+    /**
+     * Get the comments for the content.
+     */
+    public function comments(): HasMany
+    {
+        return $this->hasMany(ContentComment::class);
+    }
+
+    /**
+     * Scope a query to only include published content.
+     */
+    public function scopePublished($query)
+    {
+        return $query->where('status', self::STATUS_PUBLISHED)
+            ->where('published_at', '<=', now());
+    }
+
+    /**
+     * Scope a query to only include featured content.
+     */
+    public function scopeFeatured($query)
+    {
+        return $query->where('featured', true);
+    }
+
+    /**
+     * Scope a query to only include content with comments enabled.
+     */
+    public function scopeCommentable($query)
+    {
+        return $query->where('commentable', true);
     }
 }
