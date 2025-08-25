@@ -230,29 +230,6 @@ return new class extends Migration
             $table->index(['comment_id', 'created_at']);
         });
 
-        // ================== FAQs ==================
-        Schema::create('faqs', function (Blueprint $table) {
-            $table->uuid('id')->primary();
-            $table->json('question');
-            $table->json('answer');
-            $table->unsignedInteger('sort_order')->default(0);
-            $table->uuid('category_id')->nullable();
-            $table->boolean('is_active')->default(true);
-            $table->unsignedInteger('views_count')->default(0);
-            $table->unsignedInteger('helpful_count')->default(0);
-            $table->unsignedInteger('not_helpful_count')->default(0);
-            $table->float('helpfulness_ratio')->default(0);
-            $table->timestamps();
-            $table->softDeletes();
-
-            $table->foreign('category_id')->references('id')->on('faq_categories')->onDelete('set null');
-
-            $table->index('sort_order');
-            $table->index('is_active');
-            $table->index('category_id');
-            $table->index('helpfulness_ratio');
-        });
-
         // ================== FAQ Categories ==================
         Schema::create('faq_categories', function (Blueprint $table) {
             $table->uuid('id')->primary();
@@ -265,6 +242,29 @@ return new class extends Migration
 
             $table->index('sort_order');
             $table->index('is_active');
+        });
+
+        // ================== FAQs ==================
+        Schema::create('faqs', function (Blueprint $table) {
+            $table->uuid('id')->primary();
+            $table->json('question');
+            $table->json('answer');
+            $table->unsignedInteger('sort_order')->default(0);
+            $table->uuid('faq_category_id')->nullable();
+            $table->boolean('is_active')->default(true);
+            $table->unsignedInteger('views_count')->default(0);
+            $table->unsignedInteger('helpful_count')->default(0);
+            $table->unsignedInteger('not_helpful_count')->default(0);
+            $table->float('helpfulness_ratio')->default(0);
+            $table->timestamps();
+            $table->softDeletes();
+
+            $table->foreign('faq_category_id')->references('id')->on('faq_categories')->onDelete('set null');
+
+            $table->index('sort_order');
+            $table->index('is_active');
+            $table->index('category_id');
+            $table->index('helpfulness_ratio');
         });
 
         // ================== Tickets ==================

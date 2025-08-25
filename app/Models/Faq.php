@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Spatie\Translatable\HasTranslations;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class FAQ extends Model
+class Faq extends Model
 {
     use HasFactory, SoftDeletes, HasUuids, HasTranslations;
 
@@ -25,7 +25,7 @@ class FAQ extends Model
         'question',
         'answer',
         'sort_order',
-        'category_id',
+        'faq_category_id',
         'is_active',
         'views_count',
         'helpful_count',
@@ -58,7 +58,7 @@ class FAQ extends Model
      */
     public function category(): BelongsTo
     {
-        return $this->belongsTo(FAQCategory::class);
+        return $this->belongsTo(FaqCategory::class);
     }
 
     /**

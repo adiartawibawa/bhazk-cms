@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Spatie\Translatable\HasTranslations;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class FAQCategory extends Model
+class FaqCategory extends Model
 {
     use HasFactory, SoftDeletes, HasUuids, HasTranslations;
 
@@ -49,7 +49,7 @@ class FAQCategory extends Model
      */
     public function faqs(): HasMany
     {
-        return $this->hasMany(FAQ::class);
+        return $this->hasMany(Faq::class);
     }
 
     /**
