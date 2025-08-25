@@ -57,7 +57,7 @@ class ContentResource extends Resource
                             ->maxLength(255)
                             ->live(onBlur: true)
                             ->afterStateUpdated(function ($state, $set, $operation) {
-                                if ($operation === 'create') {
+                                if ($operation === 'create' || $operation === 'edit') {
                                     $set('slug', Str::slug($state));
                                 }
                             }),

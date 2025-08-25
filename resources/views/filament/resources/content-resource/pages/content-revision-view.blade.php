@@ -1,269 +1,132 @@
 <x-filament-panels::page>
-    <x-filament-panels::header :title="'Revision v' . $revision->version" :description="'Viewing details of this content revision'" />
-
-    <div
-        class="fi-section fi-section-with-header divide-y divide-gray-200 rounded-xl bg-white shadow-sm ring-1 ring-gray-950/5 dark:divide-white/10 dark:bg-gray-900 dark:ring-white/10">
-        <!-- Header Information -->
-        <div class="fi-section-header-ctn p-6">
-            <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
-                <div class="flex items-center gap-2">
-                    <x-filament::icon icon="heroicon-o-user" class="h-5 w-5 text-gray-400" />
-                    <div>
-                        <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Author</p>
-                        <p class="text-sm text-gray-900 dark:text-white">{{ $revision->author->username ?? 'System' }}
-                        </p>
-                    </div>
+    <div class="space-y-6">
+        <!-- Header Section -->
+        <div class="border-b pb-4">
+            <h2 class="text-xl font-bold text-gray-900">
+                Revision v{{ $revision->version }}
+            </h2>
+            <div class="flex items-center space-x-4 mt-2 text-sm text-gray-600">
+                <div class="flex items-center">
+                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                    </svg>
+                    <span>{{ $revision->author->username ?? 'System' }}</span>
                 </div>
-
-                <div class="flex items-center gap-2">
-                    <x-filament::icon icon="heroicon-o-calendar" class="h-5 w-5 text-gray-400" />
-                    <div>
-                        <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Date</p>
-                        <p class="text-sm text-gray-900 dark:text-white">
-                            {{ $revision->created_at->format('M d, Y H:i') }}</p>
-                    </div>
+                <div class="flex items-center">
+                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z">
+                        </path>
+                    </svg>
+                    <span>{{ $revision->created_at->format('M d, Y H:i') }}</span>
                 </div>
-
-                <div class="flex items-center gap-2">
-                    <x-filament::icon icon="heroicon-o-tag" class="h-5 w-5 text-gray-400" />
-                    <div>
-                        <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Change Type</p>
-                        <x-filament::badge :color="match ($revision->change_type) {
-                            'created' => 'primary',
-                            'update' => 'success',
-                            'rollback' => 'warning',
-                            'status_change' => 'info',
-                            default => 'gray',
-                        }" :label="ucfirst(str_replace('_', ' ', $revision->change_type))" />
-                    </div>
-                </div>
+                <span
+                    class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-{{ $revision->change_type === 'created' ? 'blue' : ($revision->change_type === 'update' ? 'green' : ($revision->change_type === 'rollback' ? 'purple' : 'yellow')) }}-100 text-{{ $revision->change_type === 'created' ? 'blue' : ($revision->change_type === 'update' ? 'green' : ($revision->change_type === 'rollback' ? 'purple' : 'yellow')) }}-800">
+                    {{ ucfirst(str_replace('_', ' ', $revision->change_type)) }}
+                </span>
             </div>
         </div>
 
         <!-- Change Description -->
         @if ($revision->change_description)
-            <div class="p-6">
-                <x-filament::section.heading>
-                    Change Description
-                </x-filament::section.heading>
-                <div class="mt-2">
-                    <div
-                        class="fi-alert fi-color-info fi-size-md rounded-lg bg-info-50 px-4 py-3 ring-1 ring-inset ring-info-100 dark:bg-info-500/10 dark:ring-info-400/20">
-                        <div class="flex gap-x-3">
-                            <x-filament::icon icon="heroicon-o-information-circle"
-                                class="h-5 w-5 text-info-600 dark:text-info-400" />
-                            <div class="flex-1">
-                                <p class="text-sm text-info-700 dark:text-info-400">
-                                    {{ $revision->change_description }}
-                                </p>
-                            </div>
+            <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                <div class="flex">
+                    <div class="flex-shrink-0">
+                        <svg class="h-5 w-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </div>
+                    <div class="ml-3">
+                        <h3 class="text-sm font-medium text-blue-800">Change Description</h3>
+                        <div class="mt-2 text-sm text-blue-700">
+                            <p>{{ $revision->change_description }}</p>
                         </div>
                     </div>
                 </div>
             </div>
         @endif
 
-        <!-- Content Details -->
-        <div class="p-6">
-            <x-filament::section.heading>
-                Content Details
-            </x-filament::section.heading>
-
-            <div class="mt-4 grid grid-cols-1 gap-4">
-                <!-- Title -->
-                <div>
-                    <x-filament::fieldset.label>
-                        Title
-                    </x-filament::fieldset.label>
-                    <div class="fi-fieldset-content-ctn mt-1">
-                        <div class="fi-input-wrp">
-                            <div class="fi-input-container">
-                                <div class="fi-field fi-field-w-fi-text-input fi-field-size-md">
-                                    <div class="fi-field-container">
-                                        <div class="fi-field-content">
-                                            <div class="fi-field-input-wrp">
-                                                <div class="fi-input-block">
-                                                    <p class="text-gray-900 dark:text-white">
-                                                        {{ $revision->title }}
-                                                    </p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Excerpt -->
-                @if ($revision->excerpt)
-                    <div>
-                        <x-filament::fieldset.label>
-                            Excerpt
-                        </x-filament::fieldset.label>
-                        <div class="fi-fieldset-content-ctn mt-1">
-                            <div class="fi-input-wrp">
-                                <div class="fi-input-container">
-                                    <div class="fi-field fi-field-w-fi-textarea fi-field-size-md">
-                                        <div class="fi-field-container">
-                                            <div class="fi-field-content">
-                                                <div class="fi-field-input-wrp">
-                                                    <div class="fi-input-block">
-                                                        <p class="text-gray-900 dark:text-white whitespace-pre-wrap">
-                                                            {{ $revision->excerpt }}
-                                                        </p>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                @endif
-
-                <!-- Content Body -->
-                @if ($revision->body)
-                    <div>
-                        <x-filament::fieldset.label>
-                            Content Body
-                        </x-filament::fieldset.label>
-                        <div class="fi-fieldset-content-ctn mt-1">
-                            <div class="fi-input-wrp">
-                                <div class="fi-input-container">
-                                    <div class="fi-field fi-field-w-fi-rich-editor fi-field-size-md">
-                                        <div class="fi-field-container">
-                                            <div class="fi-field-content">
-                                                <div class="fi-field-input-wrp">
-                                                    <div class="fi-input-block prose max-w-none dark:prose-invert">
-                                                        {!! $revision->body !!}
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                @endif
+        <!-- Title Section -->
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Title</label>
+            <div class="bg-gray-50 border border-gray-200 rounded-md p-3">
+                <p class="text-gray-900">{{ $revision->title }}</p>
             </div>
         </div>
 
-        <!-- Metadata -->
-        @if ($revision->metadata && count($revision->metadata) > 0)
-            <div class="p-6">
-                <x-filament::section.heading>
-                    Metadata
-                </x-filament::section.heading>
+        <!-- Excerpt Section -->
+        @if ($revision->excerpt)
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Excerpt</label>
+                <div class="bg-gray-50 border border-gray-200 rounded-md p-3">
+                    <p class="text-gray-900">{{ $revision->excerpt }}</p>
+                </div>
+            </div>
+        @endif
 
-                <div class="mt-4">
-                    <div class="fi-fieldset fi-fieldset-size-md">
-                        <div class="fi-fieldset-content">
-                            <div
-                                class="overflow-hidden rounded-lg bg-white shadow-sm ring-1 ring-gray-950/5 dark:bg-gray-900 dark:ring-white/10">
-                                <table class="w-full divide-y divide-gray-200 dark:divide-white/10">
-                                    <tbody class="divide-y divide-gray-200 dark:divide-white/10">
-                                        @foreach ($revision->metadata as $key => $value)
-                                            <tr class="transition duration-75 hover:bg-gray-50 dark:hover:bg-white/5">
-                                                <td
-                                                    class="whitespace-nowrap px-4 py-3 text-sm font-medium text-gray-950 dark:text-white">
-                                                    {{ $key }}
-                                                </td>
-                                                <td class="px-4 py-3 text-sm text-gray-500 dark:text-gray-400">
-                                                    @if (is_array($value))
-                                                        <pre class="text-xs bg-gray-50 p-2 rounded dark:bg-gray-800">{{ json_encode($value, JSON_PRETTY_PRINT) }}</pre>
-                                                    @else
-                                                        {{ $value }}
-                                                    @endif
-                                                </td>
-                                            </tr>
-                                        @endforeach
-                                    </tbody>
-                                </table>
+        <!-- Content Body Section -->
+        @if ($revision->body)
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Content Body</label>
+                <div class="bg-white border border-gray-200 rounded-md p-4 prose max-w-none">
+                    {!! $revision->body !!}
+                </div>
+            </div>
+        @endif
+
+        <!-- Metadata Section -->
+        @if ($revision->metadata && count($revision->metadata) > 0)
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Metadata</label>
+                <div class="bg-gray-50 border border-gray-200 rounded-md p-3 overflow-hidden">
+                    <div class="grid grid-cols-1 gap-2">
+                        @foreach ($revision->metadata as $key => $value)
+                            <div class="flex border-b border-gray-100 py-2 last:border-b-0">
+                                <span class="font-medium text-gray-600 w-1/4">{{ $key }}:</span>
+                                <span class="text-gray-900 flex-1">
+                                    @if (is_array($value))
+                                        {{ json_encode($value) }}
+                                    @else
+                                        {{ $value }}
+                                    @endif
+                                </span>
                             </div>
-                        </div>
+                        @endforeach
                     </div>
                 </div>
             </div>
         @endif
 
-        <!-- Diff Summary -->
+        <!-- Diff Summary (Jika ada) -->
         @if ($revision->diff_summary && count($revision->diff_summary) > 0)
-            <div class="p-6">
-                <x-filament::section.heading>
-                    Changes Summary
-                </x-filament::section.heading>
-
-                <div class="mt-4 space-y-4">
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Changes Summary</label>
+                <div class="space-y-3">
                     @foreach ($revision->diff_summary as $field => $change)
-                        <div class="fi-fieldset fi-fieldset-size-md">
-                            <x-filament::fieldset.label>
-                                {{ ucfirst(str_replace('_', ' ', $field)) }}
-                            </x-filament::fieldset.label>
-
-                            <div class="mt-2 grid grid-cols-1 gap-4 md:grid-cols-2">
-                                <!-- Old Value -->
+                        <div class="border border-gray-200 rounded-md p-3">
+                            <h4 class="font-medium text-gray-900 mb-2">{{ ucfirst(str_replace('_', ' ', $field)) }}
+                            </h4>
+                            <div class="grid grid-cols-2 gap-4">
                                 <div>
-                                    <div class="fi-fieldset-content-ctn">
-                                        <div class="fi-input-wrp">
-                                            <div class="fi-input-container">
-                                                <div class="fi-field fi-field-w-fi-text-input fi-field-size-md">
-                                                    <x-filament::fieldset.label size="sm">
-                                                        Old Value
-                                                    </x-filament::fieldset.label>
-                                                    <div class="fi-field-container">
-                                                        <div class="fi-field-content">
-                                                            <div class="fi-field-input-wrp">
-                                                                <div
-                                                                    class="fi-input-block bg-danger-50 border border-danger-200 rounded-lg p-3 dark:bg-danger-500/10 dark:border-danger-500/20">
-                                                                    <pre class="text-xs text-danger-800 dark:text-danger-400 whitespace-pre-wrap overflow-auto">
+                                    <label class="block text-xs font-medium text-gray-500 mb-1">Old Value</label>
+                                    <div class="bg-red-50 border border-red-200 rounded p-2">
+                                        <pre class="text-xs text-red-800 whitespace-pre-wrap">
 @if (is_array($change['old']))
-{{ json_encode($change['old'], JSON_PRETTY_PRINT) }}
-@else
-{{ $change['old'] ?? 'null' }}
+{{ json_encode($change['old'], JSON_PRETTY_PRINT) }}@else{{ $change['old'] }}
 @endif
-                                                            </pre>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
+</pre>
                                     </div>
                                 </div>
-
-                                <!-- New Value -->
                                 <div>
-                                    <div class="fi-fieldset-content-ctn">
-                                        <div class="fi-input-wrp">
-                                            <div class="fi-input-container">
-                                                <div class="fi-field fi-field-w-fi-text-input fi-field-size-md">
-                                                    <x-filament::fieldset.label size="sm">
-                                                        New Value
-                                                    </x-filament::fieldset.label>
-                                                    <div class="fi-field-container">
-                                                        <div class="fi-field-content">
-                                                            <div class="fi-field-input-wrp">
-                                                                <div
-                                                                    class="fi-input-block bg-success-50 border border-success-200 rounded-lg p-3 dark:bg-success-500/10 dark:border-success-500/20">
-                                                                    <pre class="text-xs text-success-800 dark:text-success-400 whitespace-pre-wrap overflow-auto">
+                                    <label class="block text-xs font-medium text-gray-500 mb-1">New Value</label>
+                                    <div class="bg-green-50 border border-green-200 rounded p-2">
+                                        <pre class="text-xs text-green-800 whitespace-pre-wrap">
 @if (is_array($change['new']))
-{{ json_encode($change['new'], JSON_PRETTY_PRINT) }}
-@else
-{{ $change['new'] ?? 'null' }}
+{{ json_encode($change['new'], JSON_PRETTY_PRINT) }}@else{{ $change['new'] }}
 @endif
-                                                            </pre>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
+</pre>
                                     </div>
                                 </div>
                             </div>
@@ -273,43 +136,25 @@
             </div>
         @endif
 
-        <!-- Technical Information -->
-        <div class="p-6">
-            <x-filament::section.heading>
-                Technical Information
-            </x-filament::section.heading>
-
-            <div class="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
-                <div class="flex items-center gap-2">
-                    <x-filament::icon icon="heroicon-o-identification" class="h-5 w-5 text-gray-400" />
-                    <div>
-                        <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Revision ID</p>
-                        <p class="text-sm font-mono text-gray-900 dark:text-white">{{ $revision->id }}</p>
-                    </div>
+        <!-- Technical Info -->
+        <div class="border-t pt-4">
+            <h3 class="text-sm font-medium text-gray-700 mb-3">Technical Information</h3>
+            <div class="grid grid-cols-2 gap-4 text-sm">
+                <div>
+                    <span class="text-gray-600">Revision ID:</span>
+                    <span class="text-gray-900 block font-mono text-xs">{{ $revision->id }}</span>
                 </div>
-
-                <div class="flex items-center gap-2">
-                    <x-filament::icon icon="heroicon-o-document-text" class="h-5 w-5 text-gray-400" />
-                    <div>
-                        <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Content ID</p>
-                        <p class="text-sm font-mono text-gray-900 dark:text-white">{{ $revision->content_id }}</p>
-                    </div>
+                <div>
+                    <span class="text-gray-600">Content ID:</span>
+                    <span class="text-gray-900 block font-mono text-xs">{{ $revision->content_id }}</span>
                 </div>
-
-                <div class="flex items-center gap-2">
-                    <x-filament::icon icon="heroicon-o-cloud" class="h-5 w-5 text-gray-400" />
-                    <div>
-                        <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Autosave</p>
-                        <x-filament::badge :color="$revision->is_autosave ? 'success' : 'gray'" :label="$revision->is_autosave ? 'Yes' : 'No'" />
-                    </div>
+                <div>
+                    <span class="text-gray-600">Autosave:</span>
+                    <span class="text-gray-900">{{ $revision->is_autosave ? 'Yes' : 'No' }}</span>
                 </div>
-
-                <div class="flex items-center gap-2">
-                    <x-filament::icon icon="heroicon-o-arrow-path" class="h-5 w-5 text-gray-400" />
-                    <div>
-                        <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Version</p>
-                        <x-filament::badge color="primary" :label="'v' . $revision->version" />
-                    </div>
+                <div>
+                    <span class="text-gray-600">Version:</span>
+                    <span class="text-gray-900">v{{ $revision->version }}</span>
                 </div>
             </div>
         </div>
@@ -360,15 +205,6 @@
         .prose table th {
             background-color: #f9fafb;
             font-weight: 600;
-        }
-
-        .dark .prose table th {
-            background-color: #374151;
-            border-color: #4b5563;
-        }
-
-        .dark .prose table td {
-            border-color: #4b5563;
         }
     </style>
 </x-filament-panels::page>
