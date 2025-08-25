@@ -263,7 +263,7 @@ return new class extends Migration
 
             $table->index('sort_order');
             $table->index('is_active');
-            $table->index('category_id');
+            $table->index('faq_category_id');
             $table->index('helpfulness_ratio');
         });
 
