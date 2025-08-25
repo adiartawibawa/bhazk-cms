@@ -10,10 +10,13 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Spatie\Translatable\HasTranslations;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
 
-class Content extends Model
+class Content extends Model implements HasMedia
 {
     use HasFactory, SoftDeletes, HasUuids, HasTranslations;
+    use InteractsWithMedia;
 
     /**
      * The table associated with the model.
@@ -166,5 +169,90 @@ class Content extends Model
     public function scopeCommentable($query)
     {
         return $query->where('commentable', true);
+    }
+
+    /**
+     * Register media collections for the content.
+     */
+    public function registerMediaCollections(): void
+    {
+        // Collection untuk gambar utama/featured image
+        $this->addMediaCollection('featured_image')
+            ->singleFile()
+            ->acceptsMimeTypes(['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml'])
+            ->useDisk('public');
+
+        // Collection untuk gallery images
+        $this->addMediaCollection('gallery')
+            ->acceptsMimeTypes(['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml'])
+            ->useDisk('public');
+
+        // Collection untuk documents (PDF, Word, etc)
+        $this->addMediaCollection('documents')
+            ->acceptsMimeTypes([
+                'application/pdf',
+                'application/msword',
+                'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                'application/vnd.ms-excel',
+                'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                'text/plain'
+            ])
+            ->useDisk('public');
+
+        // Collection untuk videos
+        $this->addMediaCollection('videos')
+            ->acceptsMimeTypes([
+                'video/mp4',
+                'video/mpeg',
+                'video/quicktime',
+                'video/x-msvideo',
+                'video/x-ms-wmv'
+            ])
+            ->useDisk('public');
+    }
+
+    /**
+     * Get the featured image URL.
+     */
+    public function getFeaturedImageUrl(string $conversion = ''): ?string
+    {
+        $media = $this->getFirstMedia('featured_image');
+        return $media ? $media->getUrl($conversion) : null;
+    }
+
+    /**
+     * Get gallery images.
+     */
+    public function getGalleryImages(): \Illuminate\Support\Collection
+    {
+        return $this->getMedia('gallery');
+    }
+
+    /**
+     * Get document files.
+     */
+    public function getDocuments(): \Illuminate\Support\Collection
+    {
+        return $this->getMedia('documents');
+    }
+
+    /**
+     * Scope a query to only include content with featured images.
+     */
+    public function scopeWithFeaturedImage($query)
+    {
+        return $query->whereHas('media', function ($q) {
+            $q->where('collection_name', 'featured_image');
+        });
+    }
+
+    /**
+     * Scope a query to only include content with gallery images.
+     */
+    public function scopeWithGallery($query)
+    {
+        return $query->whereHas('media', function ($q) {
+            $q->where('collection_name', 'gallery');
+        });
     }
 }
