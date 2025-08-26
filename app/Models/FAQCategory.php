@@ -49,7 +49,7 @@ class FaqCategory extends Model
      */
     public function faqs(): HasMany
     {
-        return $this->hasMany(Faq::class);
+        return $this->hasMany(Faq::class, 'faq_category_id', 'id');
     }
 
     /**
