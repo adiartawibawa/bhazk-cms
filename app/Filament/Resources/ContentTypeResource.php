@@ -5,6 +5,8 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\ContentTypeResource\Pages;
 use App\Filament\Resources\ContentTypeResource\RelationManagers;
 use App\Models\ContentType;
+use App\Tables\Columns\IconsColumn;
+use App\View\Components\IconPicker;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Concerns\Translatable;
@@ -14,6 +16,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
 
 class ContentTypeResource extends Resource
 {
@@ -31,98 +34,117 @@ class ContentTypeResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\Section::make('Content Type Information')
-                    ->schema([
-                        Forms\Components\TextInput::make('name')
-                            ->label('Name')
-                            ->required()
-                            ->maxLength(255)
-                            ->live(onBlur: true)
-                            ->afterStateUpdated(function ($state, $set, $operation) {
-                                if ($operation === 'create' || $operation === 'edit') {
-                                    $set('slug', Str::slug($state));
-                                }
-                            }),
+                Forms\Components\Section::make('General')->schema([
+                    Forms\Components\TextInput::make('name')
+                        ->label('Name')
+                        ->required()
+                        ->maxLength(255)
+                        ->live(onBlur: true)
+                        ->afterStateUpdated(function ($state, $set, $operation) {
+                            if ($operation === 'create' || $operation === 'edit') {
+                                $set('slug', Str::slug($state));
+                            }
+                        }),
 
-                        Forms\Components\TextInput::make('slug')
-                            ->label('Slug')
-                            ->required()
-                            ->maxLength(255)
-                            ->unique(ignoreRecord: true)
-                            ->disabled(fn($operation) => $operation === 'edit'),
+                    Forms\Components\TextInput::make('slug')
+                        ->label('Slug')
+                        ->required()
+                        ->maxLength(255)
+                        ->unique(ignoreRecord: true)
+                        ->disabled(fn($operation) => $operation === 'edit'),
 
-                        Forms\Components\Toggle::make('is_active')
-                            ->label('Active')
-                            ->default(true)
-                            ->required(),
-                    ])
-                    ->columns(2),
+                    IconPicker::make('icon')
+                        ->label('Icon')
+                        ->helperText('Pilih ikon untuk content type ini'),
 
-                Forms\Components\Section::make('Fields Configuration')
+                    Forms\Components\Toggle::make('is_active')
+                        ->label('Active')
+                        ->default(true)
+                        ->required(),
+                ])->columns(2),
+                Forms\Components\Section::make('Schema Builder')
                     ->description('Define the custom fields for this content type')
                     ->schema([
                         Forms\Components\Repeater::make('fields')
                             ->label('Fields')
                             ->schema([
                                 Forms\Components\TextInput::make('name')
-                                    ->label('Field Name')
                                     ->required()
-                                    ->maxLength(255),
-
+                                    ->rule('alpha_dash')
+                                    ->helperText('Unique key, gunakan huruf, angka, dash/underscore.'),
                                 Forms\Components\TextInput::make('label')
-                                    ->label('Field Label')
-                                    ->required()
-                                    ->maxLength(255),
-
+                                    ->required(),
                                 Forms\Components\Select::make('type')
-                                    ->label('Field Type')
+                                    ->required()
                                     ->options([
                                         'text' => 'Text',
                                         'textarea' => 'Textarea',
-                                        'richtext' => 'Rich Text',
+                                        'richtext' => 'RichText',
+                                        'markdown' => 'Markdown',
                                         'number' => 'Number',
-                                        'email' => 'Email',
-                                        'url' => 'URL',
+                                        'boolean' => 'Boolean',
                                         'date' => 'Date',
                                         'datetime' => 'DateTime',
-                                        'boolean' => 'Boolean',
-                                        'select' => 'Select',
-                                        'multiselect' => 'Multi Select',
                                         'image' => 'Image',
                                         'file' => 'File',
-                                        'color' => 'Color',
-                                    ])
-                                    ->required()
-                                    ->reactive(),
+                                        'gallery' => 'Gallery (multiple images)',
+                                        'select' => 'Select (static options)',
+                                        'tags' => 'Tags',
+                                        'repeater' => 'Repeater (nested fields)',
+                                    ]),
+                                Forms\Components\KeyValue::make('options')
+                                    ->label('Options (untuk select/tags)')
+                                    ->keyLabel('value')
+                                    ->valueLabel('label')
+                                    ->visible(fn(Forms\Get $get) => in_array($get('type'), ['select'])),
+                                Forms\Components\Toggle::make('multiple')
+                                    ->visible(fn(Forms\Get $get) => in_array($get('type'), ['file', 'image', 'gallery', 'tags', 'select'])),
+                                Forms\Components\TextInput::make('placeholder')
+                                    ->maxLength(200),
+                                Forms\Components\TextInput::make('help')
+                                    ->label('Help Text'),
+                                Forms\Components\TextInput::make('default')
+                                    ->label('Default (string/json)')
+                                    ->columnSpanFull(),
+                                Forms\Components\TextInput::make('rules')
+                                    ->label('Validation rules (pipe)')
+                                    ->helperText('contoh: required|min:3'),
+                                Forms\Components\TextInput::make('directory')
+                                    ->label('Upload dir (image/file)')
+                                    ->visible(fn(Forms\Get $get) => in_array($get('type'), ['image', 'file', 'gallery'])),
 
-                                Forms\Components\Textarea::make('options')
-                                    ->label('Options (for select/multiselect)')
-                                    ->placeholder("option1: Label 1\noption2: Label 2")
-                                    ->rows(3)
-                                    ->hidden(fn($get) => !in_array($get('type'), ['select', 'multiselect'])),
-
-                                Forms\Components\Toggle::make('required')
-                                    ->label('Required')
-                                    ->default(false),
-
-                                Forms\Components\TextInput::make('default_value')
-                                    ->label('Default Value')
-                                    ->maxLength(255),
-
-                                Forms\Components\Textarea::make('validation_rules')
-                                    ->label('Validation Rules')
-                                    ->placeholder('min:3|max:255')
-                                    ->rows(2),
-
-                                Forms\Components\Textarea::make('help_text')
-                                    ->label('Help Text')
-                                    ->rows(2),
+                                // nested schema for repeater
+                                Forms\Components\Repeater::make('schema')
+                                    ->label('Repeater Fields')
+                                    ->visible(fn(Forms\Get $get) => $get('type') === 'repeater')
+                                    ->schema([
+                                        Forms\Components\TextInput::make('name')
+                                            ->required()
+                                            ->rule('alpha_dash'),
+                                        Forms\Components\TextInput::make('label')
+                                            ->required(),
+                                        Forms\Components\Select::make('type')
+                                            ->required()
+                                            ->options([
+                                                'text' => 'Text',
+                                                'textarea' => 'Textarea',
+                                                'number' => 'Number',
+                                                'boolean' => 'Boolean',
+                                                'date' => 'Date',
+                                                'datetime' => 'DateTime',
+                                                'select' => 'Select',
+                                            ]),
+                                        Forms\Components\KeyValue::make('options')
+                                            ->visible(fn(Forms\Get $get) => $get('type') === 'select'),
+                                        Forms\Components\TextInput::make('rules')
+                                            ->label('Validation'),
+                                    ])->collapsed(),
                             ])
-                            ->defaultItems(0)
-                            ->columnSpanFull()
-                            ->grid(2)
-                            ->itemLabel(fn(array $state): ?string => $state['name'] ?? null),
-                    ]),
+                            ->collapsed()
+                            ->reorderable()
+                            ->grid(1)
+                            ->columns(2),
+                    ])->collapsible(),
             ]);
     }
 
@@ -130,6 +152,12 @@ class ContentTypeResource extends Resource
     {
         return $table
             ->columns([
+                IconsColumn::make('icon')
+                    ->label('Icon')
+                    ->getStateUsing(function ($record) {
+                        return $record->icon ?? 'heroicon-o-rectangle-stack';
+                    }),
+
                 Tables\Columns\TextColumn::make('name')
                     ->label('Name')
                     ->searchable()
@@ -237,5 +265,16 @@ class ContentTypeResource extends Resource
     public static function getGloballySearchableAttributes(): array
     {
         return ['name', 'slug'];
+    }
+
+    public static function mutateFormDataBeforeSave(array $data): array
+    {
+        $names = collect($data['schema'] ?? [])->pluck('name');
+        if ($names->duplicates()->isNotEmpty()) {
+            throw ValidationException::withMessages([
+                'schema' => 'Nama field pada schema tidak boleh duplikat.'
+            ]);
+        }
+        return $data;
     }
 }

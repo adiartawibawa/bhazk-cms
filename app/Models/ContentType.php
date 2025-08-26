@@ -24,6 +24,7 @@ class ContentType extends Model
     protected $fillable = [
         'name',
         'slug',
+        'icon',
         'fields',
         'is_active',
     ];

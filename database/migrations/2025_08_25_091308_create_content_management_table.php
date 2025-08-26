@@ -13,6 +13,7 @@ return new class extends Migration
             $table->uuid('id')->primary();
             $table->json('name');
             $table->json('slug');
+            $table->string('icon')->nullable();
             $table->json('fields')->nullable();
             $table->boolean('is_active')->default(true);
             $table->timestamps();
