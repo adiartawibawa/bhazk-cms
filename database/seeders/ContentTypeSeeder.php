@@ -29,58 +29,100 @@ class ContentTypeSeeder extends Seeder
                     [
                         'name' => 'title',
                         'type' => 'text',
-                        'label' => 'Title',
+                        'label' => [
+                            'en' => 'Title',
+                            'id' => 'Judul'
+                        ],
                         'rules' => 'required|min:3|max:255',
-                        'placeholder' => 'Enter article title',
+                        'placeholder' => [
+                            'en' => 'Enter article title',
+                            'id' => 'Masukkan judul artikel'
+                        ],
                     ],
                     [
                         'name' => 'content',
                         'type' => 'richtext',
-                        'label' => 'Content',
+                        'label' => [
+                            'en' => 'Content',
+                            'id' => 'Konten'
+                        ],
                         'rules' => 'required',
                     ],
                     [
                         'name' => 'excerpt',
                         'type' => 'textarea',
-                        'label' => 'Excerpt',
+                        'label' => [
+                            'en' => 'Excerpt',
+                            'id' => 'Ringkasan'
+                        ],
                         'rules' => 'max:500',
-                        'placeholder' => 'Brief summary of the article',
+                        'placeholder' => [
+                            'en' => 'Brief summary of the article',
+                            'id' => 'Ringkasan singkat artikel'
+                        ],
                     ],
                     [
                         'name' => 'featured_image',
                         'type' => 'image',
-                        'label' => 'Featured Image',
+                        'label' => [
+                            'en' => 'Featured Image',
+                            'id' => 'Gambar Utama'
+                        ],
                         'rules' => 'image|max:2048',
                         'directory' => 'articles/images',
                     ],
                     [
                         'name' => 'categories',
                         'type' => 'select',
-                        'label' => 'Categories',
+                        'label' => [
+                            'en' => 'Categories',
+                            'id' => 'Kategori'
+                        ],
                         'multiple' => true,
                         'options' => [
-                            'news' => 'News',
-                            'technology' => 'Technology',
-                            'lifestyle' => 'Lifestyle',
+                            'news' => ['en' => 'News', 'id' => 'Berita'],
+                            'technology' => ['en' => 'Technology', 'id' => 'Teknologi'],
+                            'lifestyle' => ['en' => 'Lifestyle', 'id' => 'Gaya Hidup'],
                         ],
                     ],
                     [
                         'name' => 'tags',
                         'type' => 'tags',
-                        'label' => 'Tags',
-                        'placeholder' => 'Add tags...',
+                        'label' => [
+                            'en' => 'Tags',
+                            'id' => 'Tag'
+                        ],
+                        'placeholder' => [
+                            'en' => 'Add tags...',
+                            'id' => 'Tambahkan tag...'
+                        ],
                     ],
                     [
                         'name' => 'published_at',
                         'type' => 'datetime',
-                        'label' => 'Publish Date',
+                        'label' => [
+                            'en' => 'Publish Date',
+                            'id' => 'Tanggal Publikasi'
+                        ],
                         'rules' => 'required',
                     ],
                     [
                         'name' => 'is_featured',
                         'type' => 'boolean',
-                        'label' => 'Featured Article',
+                        'label' => [
+                            'en' => 'Featured Article',
+                            'id' => 'Artikel Unggulan'
+                        ],
                         'default' => false,
+                    ],
+                    [
+                        'name' => 'meta_description',
+                        'type' => 'textarea',
+                        'label' => [
+                            'en' => 'Meta Description',
+                            'id' => 'Deskripsi Meta'
+                        ],
+                        'rules' => 'max:160',
                     ],
                 ],
             ],
@@ -99,260 +141,244 @@ class ContentTypeSeeder extends Seeder
                     [
                         'name' => 'title',
                         'type' => 'text',
-                        'label' => 'Title',
+                        'label' => [
+                            'en' => 'Title',
+                            'id' => 'Judul'
+                        ],
                         'rules' => 'required|min:3|max:255',
                     ],
                     [
                         'name' => 'content',
                         'type' => 'richtext',
-                        'label' => 'Content',
+                        'label' => [
+                            'en' => 'Content',
+                            'id' => 'Konten'
+                        ],
                         'rules' => 'required',
                     ],
                     [
                         'name' => 'page_template',
                         'type' => 'select',
-                        'label' => 'Template',
+                        'label' => [
+                            'en' => 'Template',
+                            'id' => 'Template'
+                        ],
                         'options' => [
-                            'default' => 'Default',
-                            'fullwidth' => 'Full Width',
-                            'sidebar' => 'With Sidebar',
+                            'default' => ['en' => 'Default', 'id' => 'Default'],
+                            'fullwidth' => ['en' => 'Full Width', 'id' => 'Lebar Penuh'],
+                            'sidebar' => ['en' => 'With Sidebar', 'id' => 'Dengan Sidebar'],
                         ],
                     ],
                     [
                         'name' => 'show_in_navigation',
                         'type' => 'boolean',
-                        'label' => 'Show in Navigation',
+                        'label' => [
+                            'en' => 'Show in Navigation',
+                            'id' => 'Tampilkan di Navigasi'
+                        ],
                         'default' => true,
                     ],
                     [
                         'name' => 'meta_description',
                         'type' => 'textarea',
-                        'label' => 'Meta Description',
+                        'label' => [
+                            'en' => 'Meta Description',
+                            'id' => 'Deskripsi Meta'
+                        ],
                         'rules' => 'max:160',
+                    ],
+                    [
+                        'name' => 'is_published',
+                        'type' => 'boolean',
+                        'label' => [
+                            'en' => 'Published',
+                            'id' => 'Diterbitkan'
+                        ],
+                        'default' => true,
                     ],
                 ],
             ],
             [
                 'name' => [
-                    'en' => 'Event',
-                    'id' => 'Acara',
+                    'en' => 'News',
+                    'id' => 'Berita',
                 ],
                 'slug' => [
-                    'en' => 'events',
-                    'id' => 'acara',
+                    'en' => 'news',
+                    'id' => 'berita',
                 ],
-                'icon' => 'heroicon-o-calendar',
+                'icon' => 'heroicon-o-newspaper',
                 'is_active' => true,
                 'fields' => [
                     [
                         'name' => 'title',
                         'type' => 'text',
-                        'label' => 'Event Title',
+                        'label' => [
+                            'en' => 'Title',
+                            'id' => 'Judul'
+                        ],
                         'rules' => 'required|min:3|max:255',
                     ],
                     [
-                        'name' => 'description',
+                        'name' => 'content',
                         'type' => 'richtext',
-                        'label' => 'Description',
+                        'label' => [
+                            'en' => 'Content',
+                            'id' => 'Konten'
+                        ],
                         'rules' => 'required',
                     ],
                     [
-                        'name' => 'start_date',
-                        'type' => 'datetime',
-                        'label' => 'Start Date',
-                        'rules' => 'required',
-                    ],
-                    [
-                        'name' => 'end_date',
-                        'type' => 'datetime',
-                        'label' => 'End Date',
-                        'rules' => 'required|after:start_date',
-                    ],
-                    [
-                        'name' => 'location',
-                        'type' => 'text',
-                        'label' => 'Location',
-                        'rules' => 'required',
-                    ],
-                    [
-                        'name' => 'venue',
-                        'type' => 'text',
-                        'label' => 'Venue',
-                    ],
-                    [
-                        'name' => 'organizer',
-                        'type' => 'text',
-                        'label' => 'Organizer',
-                    ],
-                    [
-                        'name' => 'registration_link',
-                        'type' => 'url',
-                        'label' => 'Registration Link',
-                        'rules' => 'nullable|url',
+                        'name' => 'excerpt',
+                        'type' => 'textarea',
+                        'label' => [
+                            'en' => 'Excerpt',
+                            'id' => 'Ringkasan'
+                        ],
+                        'rules' => 'max:200',
                     ],
                     [
                         'name' => 'featured_image',
                         'type' => 'image',
-                        'label' => 'Event Image',
-                        'rules' => 'image|max:2048',
-                        'directory' => 'events/images',
-                    ],
-                ],
-            ],
-            [
-                'name' => [
-                    'en' => 'Testimonial',
-                    'id' => 'Testimoni',
-                ],
-                'slug' => [
-                    'en' => 'testimonials',
-                    'id' => 'testimoni',
-                ],
-                'icon' => 'heroicon-o-chat-bubble-left-ellipsis',
-                'is_active' => true,
-                'fields' => [
-                    [
-                        'name' => 'client_name',
-                        'type' => 'text',
-                        'label' => 'Client Name',
-                        'rules' => 'required|min:3|max:255',
+                        'label' => [
+                            'en' => 'Featured Image',
+                            'id' => 'Gambar Utama'
+                        ],
+                        'rules' => 'required|image|max:2048',
+                        'directory' => 'news/images',
                     ],
                     [
-                        'name' => 'company',
-                        'type' => 'text',
-                        'label' => 'Company',
-                        'rules' => 'max:255',
-                    ],
-                    [
-                        'name' => 'position',
-                        'type' => 'text',
-                        'label' => 'Position',
-                        'rules' => 'max:255',
-                    ],
-                    [
-                        'name' => 'testimonial',
-                        'type' => 'textarea',
-                        'label' => 'Testimonial',
-                        'rules' => 'required|max:1000',
-                    ],
-                    [
-                        'name' => 'rating',
+                        'name' => 'news_category',
                         'type' => 'select',
-                        'label' => 'Rating',
+                        'label' => [
+                            'en' => 'Category',
+                            'id' => 'Kategori'
+                        ],
                         'options' => [
-                            '1' =>  '1 Star',
-                            '2' =>  '2 Star',
-                            '3' =>  '3 Star',
-                            '4' =>  '4 Star',
-                            '5' =>  '5 Star',
+                            'local' => ['en' => 'Local', 'id' => 'Lokal'],
+                            'national' => ['en' => 'National', 'id' => 'Nasional'],
+                            'international' => ['en' => 'International', 'id' => 'Internasional'],
+                            'sports' => ['en' => 'Sports', 'id' => 'Olahraga'],
+                            'business' => ['en' => 'Business', 'id' => 'Bisnis'],
                         ],
                     ],
                     [
-                        'name' => 'client_photo',
-                        'type' => 'image',
-                        'label' => 'Client Photo',
-                        'rules' => 'image|max:1024',
-                        'directory' => 'testimonials/photos',
+                        'name' => 'published_at',
+                        'type' => 'datetime',
+                        'label' => [
+                            'en' => 'Publish Date',
+                            'id' => 'Tanggal Publikasi'
+                        ],
+                        'rules' => 'required',
                     ],
                     [
-                        'name' => 'is_featured',
+                        'name' => 'is_breaking_news',
                         'type' => 'boolean',
-                        'label' => 'Featured Testimonial',
+                        'label' => [
+                            'en' => 'Breaking News',
+                            'id' => 'Berita Terkini'
+                        ],
                         'default' => false,
                     ],
                 ],
             ],
             [
                 'name' => [
-                    'en' => 'Team Member',
-                    'id' => 'Anggota Tim',
+                    'en' => 'Blog Post',
+                    'id' => 'Postingan Blog',
                 ],
                 'slug' => [
-                    'en' => 'team-members',
-                    'id' => 'anggota-tim',
+                    'en' => 'blog-posts',
+                    'id' => 'postingan-blog',
                 ],
-                'icon' => 'heroicon-o-user-group',
+                'icon' => 'heroicon-o-pencil',
                 'is_active' => true,
                 'fields' => [
                     [
-                        'name' => 'name',
+                        'name' => 'title',
                         'type' => 'text',
-                        'label' => 'Full Name',
+                        'label' => [
+                            'en' => 'Title',
+                            'id' => 'Judul'
+                        ],
                         'rules' => 'required|min:3|max:255',
                     ],
                     [
-                        'name' => 'position',
-                        'type' => 'text',
-                        'label' => 'Position',
-                        'rules' => 'required|max:255',
-                    ],
-                    [
-                        'name' => 'department',
-                        'type' => 'select',
-                        'label' => 'Department',
-                        'options' => [
-                            'management' => 'Management',
-                            'development' => 'Development',
-                            'design' => 'Design',
-                            'marketing' => 'Marketing',
-                            'support' => 'Support',
+                        'name' => 'content',
+                        'type' => 'richtext',
+                        'label' => [
+                            'en' => 'Content',
+                            'id' => 'Konten'
                         ],
+                        'rules' => 'required',
                     ],
                     [
-                        'name' => 'bio',
+                        'name' => 'excerpt',
                         'type' => 'textarea',
-                        'label' => 'Biography',
-                        'rules' => 'max:500',
+                        'label' => [
+                            'en' => 'Excerpt',
+                            'id' => 'Ringkasan'
+                        ],
+                        'rules' => 'max:300',
                     ],
                     [
-                        'name' => 'photo',
+                        'name' => 'featured_image',
                         'type' => 'image',
-                        'label' => 'Photo',
-                        'rules' => 'required|image|max:1024',
-                        'directory' => 'team/photos',
+                        'label' => [
+                            'en' => 'Featured Image',
+                            'id' => 'Gambar Utama'
+                        ],
+                        'rules' => 'image|max:2048',
+                        'directory' => 'blog/images',
                     ],
                     [
-                        'name' => 'email',
-                        'type' => 'email',
-                        'label' => 'Email',
-                        'rules' => 'nullable|email',
+                        'name' => 'author',
+                        'type' => 'select',
+                        'label' => [
+                            'en' => 'Author',
+                            'id' => 'Penulis'
+                        ],
+                        'options' => [], // Will be populated dynamically from users
                     ],
                     [
-                        'name' => 'phone',
-                        'type' => 'text',
-                        'label' => 'Phone',
-                        'rules' => 'max:20',
-                    ],
-                    [
-                        'name' => 'social_links',
-                        'type' => 'repeater',
-                        'label' => 'Social Links',
-                        'fields' => [
-                            [
-                                'name' => 'platform',
-                                'type' => 'select',
-                                'label' => 'Platform',
-                                'options' => [
-                                    'linkedin' => 'LinkedIn',
-                                    'twitter' => 'Twitter',
-                                    'facebook' => 'Facebook',
-                                    'instagram' => 'Instagram',
-                                    'youtube' => 'YouTube',
-                                ],
-                            ],
-                            [
-                                'name' => 'url',
-                                'type' => 'url',
-                                'label' => 'URL',
-                                'rules' => 'required|url',
-                            ],
+                        'name' => 'blog_category',
+                        'type' => 'select',
+                        'label' => [
+                            'en' => 'Category',
+                            'id' => 'Kategori'
+                        ],
+                        'multiple' => true,
+                        'options' => [
+                            'tutorial' => ['en' => 'Tutorial', 'id' => 'Tutorial'],
+                            'tips' => ['en' => 'Tips & Tricks', 'id' => 'Tips & Trik'],
+                            'news' => ['en' => 'Industry News', 'id' => 'Berita Industri'],
+                            'review' => ['en' => 'Product Review', 'id' => 'Ulasan Produk'],
                         ],
                     ],
                     [
-                        'name' => 'is_active',
+                        'name' => 'tags',
+                        'type' => 'tags',
+                        'label' => [
+                            'en' => 'Tags',
+                            'id' => 'Tag'
+                        ],
+                    ],
+                    [
+                        'name' => 'published_at',
+                        'type' => 'datetime',
+                        'label' => [
+                            'en' => 'Publish Date',
+                            'id' => 'Tanggal Publikasi'
+                        ],
+                    ],
+                    [
+                        'name' => 'is_published',
                         'type' => 'boolean',
-                        'label' => 'URL',
-                        'default' => true,
+                        'label' => [
+                            'en' => 'Published',
+                            'id' => 'Diterbitkan'
+                        ],
+                        'default' => false,
                     ],
                 ],
             ],
@@ -371,37 +397,145 @@ class ContentTypeSeeder extends Seeder
                     [
                         'name' => 'question',
                         'type' => 'text',
-                        'label' => 'Question',
+                        'label' => [
+                            'en' => 'Question',
+                            'id' => 'Pertanyaan'
+                        ],
                         'rules' => 'required|min:3|max:255',
                     ],
                     [
                         'name' => 'answer',
                         'type' => 'richtext',
-                        'label' =>  'Answer',
+                        'label' => [
+                            'en' => 'Answer',
+                            'id' => 'Jawaban'
+                        ],
                         'rules' => 'required',
                     ],
                     [
                         'name' => 'category',
                         'type' => 'select',
-                        'label' => 'Category',
+                        'label' => [
+                            'en' => 'Category',
+                            'id' => 'Kategori'
+                        ],
                         'options' => [
-                            'general' => 'General',
-                            'technical' => 'Technical',
-                            'billing' => 'Billing',
-                            'support' => 'Support',
+                            'general' => ['en' => 'General', 'id' => 'Umum'],
+                            'technical' => ['en' => 'Technical', 'id' => 'Teknis'],
+                            'billing' => ['en' => 'Billing', 'id' => 'Pembayaran'],
+                            'support' => ['en' => 'Support', 'id' => 'Dukungan'],
                         ],
                     ],
                     [
                         'name' => 'order',
                         'type' => 'number',
-                        'label' => 'Order',
+                        'label' => [
+                            'en' => 'Order',
+                            'id' => 'Urutan'
+                        ],
                         'rules' => 'numeric|min:0',
                         'default' => 0,
                     ],
                     [
                         'name' => 'is_published',
                         'type' => 'boolean',
-                        'label' =>  'Published',
+                        'label' => [
+                            'en' => 'Published',
+                            'id' => 'Diterbitkan'
+                        ],
+                        'default' => true,
+                    ],
+                ],
+            ],
+            [
+                'name' => [
+                    'en' => 'Testimonial',
+                    'id' => 'Testimoni',
+                ],
+                'slug' => [
+                    'en' => 'testimonials',
+                    'id' => 'testimoni',
+                ],
+                'icon' => 'heroicon-o-chat-bubble-left-ellipsis',
+                'is_active' => true,
+                'fields' => [
+                    [
+                        'name' => 'client_name',
+                        'type' => 'text',
+                        'label' => [
+                            'en' => 'Client Name',
+                            'id' => 'Nama Klien'
+                        ],
+                        'rules' => 'required|min:3|max:255',
+                    ],
+                    [
+                        'name' => 'company',
+                        'type' => 'text',
+                        'label' => [
+                            'en' => 'Company',
+                            'id' => 'Perusahaan'
+                        ],
+                        'rules' => 'max:255',
+                    ],
+                    [
+                        'name' => 'position',
+                        'type' => 'text',
+                        'label' => [
+                            'en' => 'Position',
+                            'id' => 'Posisi'
+                        ],
+                        'rules' => 'max:255',
+                    ],
+                    [
+                        'name' => 'testimonial',
+                        'type' => 'textarea',
+                        'label' => [
+                            'en' => 'Testimonial',
+                            'id' => 'Testimoni'
+                        ],
+                        'rules' => 'required|max:1000',
+                    ],
+                    [
+                        'name' => 'rating',
+                        'type' => 'select',
+                        'label' => [
+                            'en' => 'Rating',
+                            'id' => 'Penilaian'
+                        ],
+                        'options' => [
+                            '1' => ['en' => '1 Star', 'id' => '1 Bintang'],
+                            '2' => ['en' => '2 Stars', 'id' => '2 Bintang'],
+                            '3' => ['en' => '3 Stars', 'id' => '3 Bintang'],
+                            '4' => ['en' => '4 Stars', 'id' => '4 Bintang'],
+                            '5' => ['en' => '5 Stars', 'id' => '5 Bintang'],
+                        ],
+                    ],
+                    [
+                        'name' => 'client_photo',
+                        'type' => 'image',
+                        'label' => [
+                            'en' => 'Client Photo',
+                            'id' => 'Foto Klien'
+                        ],
+                        'rules' => 'image|max:1024',
+                        'directory' => 'testimonials/photos',
+                    ],
+                    [
+                        'name' => 'is_featured',
+                        'type' => 'boolean',
+                        'label' => [
+                            'en' => 'Featured Testimonial',
+                            'id' => 'Testimoni Unggulan'
+                        ],
+                        'default' => false,
+                    ],
+                    [
+                        'name' => 'is_published',
+                        'type' => 'boolean',
+                        'label' => [
+                            'en' => 'Published',
+                            'id' => 'Diterbitkan'
+                        ],
                         'default' => true,
                     ],
                 ],

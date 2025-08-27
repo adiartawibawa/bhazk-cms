@@ -9,6 +9,7 @@ use App\Models\TicketStatusHistory;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Str;
 
 class TicketingSystemSeeder extends Seeder
 {
@@ -24,12 +25,33 @@ class TicketingSystemSeeder extends Seeder
         Ticket::query()->delete();
 
         // Ambil beberapa user untuk dijadikan customer dan agent
-        $customers = User::role('customer')->take(5)->get();
-        $agents = User::role('agent')->take(3)->get();
+        // Untuk ticketing system, kita asumsikan:
+        // - Customer: User dengan role 'User' atau 'Subscriber'
+        // - Agent: User dengan role 'Admin', 'Editor', atau 'Author'
 
-        if ($customers->isEmpty() || $agents->isEmpty()) {
-            $this->command->error('Please seed users with customer and agent roles first!');
-            return;
+        $customers = User::whereHas('roles', function ($query) {
+            $query->whereIn('name', ['User', 'Subscriber']);
+        })->take(5)->get();
+
+        $agents = User::whereHas('roles', function ($query) {
+            $query->whereIn('name', ['Admin', 'Editor', 'Author']);
+        })->take(3)->get();
+
+        if ($customers->isEmpty()) {
+            // Fallback: ambil user biasa jika tidak ada customer
+            $customers = User::take(5)->get();
+        }
+
+        if ($agents->isEmpty()) {
+            // Fallback: ambil admin atau buat user agent jika tidak ada
+            $agents = User::whereHas('roles', function ($query) {
+                $query->where('name', 'Admin');
+            })->take(3)->get();
+
+            if ($agents->isEmpty()) {
+                $this->command->error('Please seed users with Admin, Editor, or Author roles first!');
+                return;
+            }
         }
 
         $tickets = [
@@ -126,7 +148,7 @@ class TicketingSystemSeeder extends Seeder
 
             // Add status history for initial creation
             $statusHistory[] = [
-                'id' => \Illuminate\Support\Str::uuid(),
+                'id' => Str::uuid(),
                 'ticket_id' => $ticket->id,
                 'changed_by' => $ticket->user_id,
                 'old_status' => null,
@@ -154,7 +176,7 @@ class TicketingSystemSeeder extends Seeder
                 // Add status change history if needed
                 if ($ticket->status === Ticket::STATUS_RESOLVED || $ticket->status === Ticket::STATUS_CLOSED) {
                     $statusHistory[] = [
-                        'id' => \Illuminate\Support\Str::uuid(),
+                        'id' => Str::uuid(),
                         'ticket_id' => $ticket->id,
                         'changed_by' => $ticket->assigned_to ?? $agents[0]->id,
                         'old_status' => Ticket::STATUS_IN_PROGRESS,
@@ -169,7 +191,7 @@ class TicketingSystemSeeder extends Seeder
             // Add attachments for some tickets
             if ($ticket->type === Ticket::TYPE_BUG) {
                 $attachments[] = [
-                    'id' => \Illuminate\Support\Str::uuid(),
+                    'id' => Str::uuid(),
                     'ticket_id' => $ticket->id,
                     'message_id' => $userMessage->id,
                     'user_id' => $ticket->user_id,

@@ -17,7 +17,7 @@ class FaqsSeeder extends Seeder
         Faq::query()->delete();
         FaqCategory::query()->delete();
 
-        // Buat kategori FAQ
+        // Buat kategori FAQ untuk CMS
         $categories = [
             [
                 'name' => ['en' => 'General', 'id' => 'Umum'],
@@ -26,26 +26,26 @@ class FaqsSeeder extends Seeder
                 'is_active' => true,
             ],
             [
-                'name' => ['en' => 'Payments', 'id' => 'Pembayaran'],
-                'slug' => ['en' => 'payments', 'id' => 'pembayaran'],
+                'name' => ['en' => 'Content Management', 'id' => 'Manajemen Konten'],
+                'slug' => ['en' => 'content-management', 'id' => 'manajemen-konten'],
                 'sort_order' => 2,
                 'is_active' => true,
             ],
             [
-                'name' => ['en' => 'Shipping', 'id' => 'Pengiriman'],
-                'slug' => ['en' => 'shipping', 'id' => 'pengiriman'],
+                'name' => ['en' => 'User Management', 'id' => 'Manajemen Pengguna'],
+                'slug' => ['en' => 'user-management', 'id' => 'manajemen-pengguna'],
                 'sort_order' => 3,
                 'is_active' => true,
             ],
             [
-                'name' => ['en' => 'Account', 'id' => 'Akun'],
-                'slug' => ['en' => 'account', 'id' => 'akun'],
+                'name' => ['en' => 'Permissions & Roles', 'id' => 'Izin & Peran'],
+                'slug' => ['en' => 'permissions-roles', 'id' => 'izin-peran'],
                 'sort_order' => 4,
                 'is_active' => true,
             ],
             [
-                'name' => ['en' => 'Returns & Refunds', 'id' => 'Pengembalian & Refund'],
-                'slug' => ['en' => 'returns-refunds', 'id' => 'pengembalian-refund'],
+                'name' => ['en' => 'Troubleshooting', 'id' => 'Pemecahan Masalah'],
+                'slug' => ['en' => 'troubleshooting', 'id' => 'pemecahan-masalah'],
                 'sort_order' => 5,
                 'is_active' => true,
             ],
@@ -57,22 +57,22 @@ class FaqsSeeder extends Seeder
 
         // Ambil kategori untuk relasi
         $generalCategory = FaqCategory::where('slug->en', 'general')->first();
-        $paymentsCategory = FaqCategory::where('slug->en', 'payments')->first();
-        $shippingCategory = FaqCategory::where('slug->en', 'shipping')->first();
-        $accountCategory = FaqCategory::where('slug->en', 'account')->first();
-        $returnsCategory = FaqCategory::where('slug->en', 'returns-refunds')->first();
+        $contentCategory = FaqCategory::where('slug->en', 'content-management')->first();
+        $userCategory = FaqCategory::where('slug->en', 'user-management')->first();
+        $permissionsCategory = FaqCategory::where('slug->en', 'permissions-roles')->first();
+        $troubleshootingCategory = FaqCategory::where('slug->en', 'troubleshooting')->first();
 
-        // Buat FAQ items
+        // Buat FAQ items untuk CMS
         $faqs = [
             // General FAQs
             [
                 'question' => [
-                    'en' => 'What is your company about?',
-                    'id' => 'Apa yang dilakukan perusahaan Anda?'
+                    'en' => 'What is this CMS system?',
+                    'id' => 'Apa itu sistem CMS ini?'
                 ],
                 'answer' => [
-                    'en' => 'Our company provides high-quality products and services to customers worldwide with a focus on customer satisfaction.',
-                    'id' => 'Perusahaan kami menyediakan produk dan layanan berkualitas tinggi kepada pelanggan di seluruh dunia dengan fokus pada kepuasan pelanggan.'
+                    'en' => 'This is a comprehensive Content Management System designed to help you manage your website content, users, permissions, and digital assets efficiently.',
+                    'id' => 'Ini adalah Sistem Manajemen Konten yang komprehensif yang dirancang untuk membantu Anda mengelola konten website, pengguna, izin, dan aset digital dengan efisien.'
                 ],
                 'sort_order' => 1,
                 'faq_category_id' => $generalCategory->id,
@@ -84,12 +84,12 @@ class FaqsSeeder extends Seeder
             ],
             [
                 'question' => [
-                    'en' => 'How can I contact customer service?',
-                    'id' => 'Bagaimana saya bisa menghubungi layanan pelanggan?'
+                    'en' => 'How do I get support for the CMS?',
+                    'id' => 'Bagaimana cara mendapatkan dukungan untuk CMS?'
                 ],
                 'answer' => [
-                    'en' => 'You can contact our customer service team via email at support@company.com or by phone at +1-800-123-4567 during business hours (9 AM - 5 PM, Monday to Friday).',
-                    'id' => 'Anda dapat menghubungi tim layanan pelanggan kami melalui email di support@company.com atau melalui telepon di +1-800-123-4567 selama jam kerja (9 pagi - 5 sore, Senin hingga Jumat).'
+                    'en' => 'You can contact our support team through the ticketing system in the admin panel or email us at cms-support@company.com. Response time is typically within 24 hours.',
+                    'id' => 'Anda dapat menghubungi tim dukungan kami melalui sistem tiket di panel admin atau email ke cms-support@company.com. Waktu respons biasanya dalam 24 jam.'
                 ],
                 'sort_order' => 2,
                 'faq_category_id' => $generalCategory->id,
@@ -99,36 +99,19 @@ class FaqsSeeder extends Seeder
                 'not_helpful_count' => 30,
                 'helpfulness_ratio' => 0.87,
             ],
-            [
-                'question' => [
-                    'en' => 'Where are you located?',
-                    'id' => 'Dimana lokasi Anda?'
-                ],
-                'answer' => [
-                    'en' => 'Our main office is located at 123 Business Street, Commerce City, CC 12345. We also have several retail locations throughout the country.',
-                    'id' => 'Kantor utama kami berada di Jalan Bisnis 123, Kota Commerce, CC 12345. Kami juga memiliki beberapa lokasi ritel di seluruh negeri.'
-                ],
-                'sort_order' => 3,
-                'faq_category_id' => $generalCategory->id,
-                'is_active' => true,
-                'views_count' => 95,
-                'helpful_count' => 80,
-                'not_helpful_count' => 15,
-                'helpfulness_ratio' => 0.84,
-            ],
 
-            // Payments FAQs
+            // Content Management FAQs
             [
                 'question' => [
-                    'en' => 'What payment methods do you accept?',
-                    'id' => 'Metode pembayaran apa yang Anda terima?'
+                    'en' => 'How do I create a new post?',
+                    'id' => 'Bagaimana cara membuat postingan baru?'
                 ],
                 'answer' => [
-                    'en' => 'We accept all major credit cards (Visa, MasterCard, American Express), PayPal, bank transfers, and Apple Pay.',
-                    'id' => 'Kami menerima semua kartu kredit utama (Visa, MasterCard, American Express), PayPal, transfer bank, dan Apple Pay.'
+                    'en' => 'Go to Content → Posts → Create New. Fill in the title, content, and metadata. You can save as draft or publish immediately based on your permissions.',
+                    'id' => 'Pergi ke Konten → Postingan → Buat Baru. Isi judul, konten, dan metadata. Anda dapat menyimpan sebagai draf atau publikasi segera berdasarkan izin Anda.'
                 ],
                 'sort_order' => 1,
-                'faq_category_id' => $paymentsCategory->id,
+                'faq_category_id' => $contentCategory->id,
                 'is_active' => true,
                 'views_count' => 320,
                 'helpful_count' => 290,
@@ -137,68 +120,51 @@ class FaqsSeeder extends Seeder
             ],
             [
                 'question' => [
-                    'en' => 'Is my payment information secure?',
-                    'id' => 'Apakah informasi pembayaran saya aman?'
+                    'en' => 'How can I schedule content for future publication?',
+                    'id' => 'Bagaimana cara menjadwalkan konten untuk publikasi mendatang?'
                 ],
                 'answer' => [
-                    'en' => 'Yes, we use industry-standard SSL encryption to protect your payment information. We do not store your credit card details on our servers.',
-                    'id' => 'Ya, kami menggunakan enkripsi SSL standar industri untuk melindungi informasi pembayaran Anda. Kami tidak menyimpan detail kartu kredit Anda di server kami.'
+                    'en' => 'When creating or editing content, use the "Publish At" date picker to set a future date and time. The content will automatically publish at the scheduled time.',
+                    'id' => 'Saat membuat atau mengedit konten, gunakan pemilih tanggal "Publikasi Pada" untuk mengatur tanggal dan waktu mendatang. Konten akan otomatis terbit pada waktu yang dijadwalkan.'
                 ],
                 'sort_order' => 2,
-                'faq_category_id' => $paymentsCategory->id,
+                'faq_category_id' => $contentCategory->id,
+                'is_active' => true,
+                'views_count' => 180,
+                'helpful_count' => 160,
+                'not_helpful_count' => 20,
+                'helpfulness_ratio' => 0.89,
+            ],
+            [
+                'question' => [
+                    'en' => 'What file types can I upload to the media library?',
+                    'id' => 'Jenis file apa yang bisa saya unggah ke perpustakaan media?'
+                ],
+                'answer' => [
+                    'en' => 'You can upload images (JPG, PNG, GIF, WEBP), documents (PDF, DOC, DOCX), and media files (MP4, MP3). Maximum file size is 10MB for images and 50MB for other files.',
+                    'id' => 'Anda dapat mengunggah gambar (JPG, PNG, GIF, WEBP), dokumen (PDF, DOC, DOCX), dan file media (MP4, MP3). Ukuran file maksimum 10MB untuk gambar dan 50MB untuk file lainnya.'
+                ],
+                'sort_order' => 3,
+                'faq_category_id' => $contentCategory->id,
                 'is_active' => true,
                 'views_count' => 275,
                 'helpful_count' => 250,
                 'not_helpful_count' => 25,
                 'helpfulness_ratio' => 0.91,
             ],
-            [
-                'question' => [
-                    'en' => 'Do you offer payment plans?',
-                    'id' => 'Apakah Anda menawarkan rencana pembayaran?'
-                ],
-                'answer' => [
-                    'en' => 'Yes, we offer payment plans for orders over $500. You can choose to pay in 3, 6, or 12 monthly installments at checkout.',
-                    'id' => 'Ya, kami menawarkan rencana pembayaran untuk pesanan di atas $500. Anda dapat memilih untuk membayar dalam 3, 6, atau 12 angsuran bulanan saat checkout.'
-                ],
-                'sort_order' => 3,
-                'faq_category_id' => $paymentsCategory->id,
-                'is_active' => true,
-                'views_count' => 180,
-                'helpful_count' => 150,
-                'not_helpful_count' => 30,
-                'helpfulness_ratio' => 0.83,
-            ],
 
-            // Shipping FAQs
+            // User Management FAQs
             [
                 'question' => [
-                    'en' => 'How long does shipping take?',
-                    'id' => 'Berapa lama pengiriman dilakukan?'
+                    'en' => 'How do I add a new user to the system?',
+                    'id' => 'Bagaimana cara menambah pengguna baru ke sistem?'
                 ],
                 'answer' => [
-                    'en' => 'Standard shipping takes 3-5 business days. Express shipping is available for an additional fee and delivers within 1-2 business days.',
-                    'id' => 'Pengiriman standar memakan waktu 3-5 hari kerja. Pengiriman ekspres tersedia dengan biaya tambahan dan dikirim dalam 1-2 hari kerja.'
+                    'en' => 'Go to Users → Add New. Fill in the required information and assign appropriate roles. The user will receive an email invitation to set their password.',
+                    'id' => 'Pergi ke Pengguna → Tambah Baru. Isi informasi yang diperlukan dan tetapkan peran yang sesuai. Pengguna akan menerima undangan email untuk mengatur kata sandi mereka.'
                 ],
                 'sort_order' => 1,
-                'faq_category_id' => $shippingCategory->id,
-                'is_active' => true,
-                'views_count' => 420,
-                'helpful_count' => 380,
-                'not_helpful_count' => 40,
-                'helpfulness_ratio' => 0.90,
-            ],
-            [
-                'question' => [
-                    'en' => 'Do you ship internationally?',
-                    'id' => 'Apakah Anda melakukan pengiriman internasional?'
-                ],
-                'answer' => [
-                    'en' => 'Yes, we ship to over 50 countries worldwide. International shipping times vary by destination, typically taking 7-14 business days.',
-                    'id' => 'Ya, kami mengirim ke lebih dari 50 negara di seluruh dunia. Waktu pengiriman internasional bervariasi berdasarkan tujuan, biasanya memakan waktu 7-14 hari kerja.'
-                ],
-                'sort_order' => 2,
-                'faq_category_id' => $shippingCategory->id,
+                'faq_category_id' => $userCategory->id,
                 'is_active' => true,
                 'views_count' => 195,
                 'helpful_count' => 170,
@@ -207,87 +173,104 @@ class FaqsSeeder extends Seeder
             ],
             [
                 'question' => [
-                    'en' => 'How can I track my order?',
-                    'id' => 'Bagaimana saya bisa melacak pesanan saya?'
+                    'en' => 'What is the difference between Author, Editor, and Contributor?',
+                    'id' => 'Apa perbedaan antara Penulis, Editor, dan Kontributor?'
                 ],
                 'answer' => [
-                    'en' => 'Once your order ships, you will receive a confirmation email with a tracking number. You can use this number to track your order on our website or the carrier\'s website.',
-                    'id' => 'Setelah pesanan Anda dikirim, Anda akan menerima email konfirmasi dengan nomor pelacakan. Anda dapat menggunakan nomor ini untuk melacak pesanan Anda di situs web kami atau situs web operator.'
+                    'en' => 'Authors can create and publish their own content. Editors can create, edit, and publish any content. Contributors can create content but require approval from Editors or Admins to publish.',
+                    'id' => 'Penulis dapat membuat dan mempublikasikan konten mereka sendiri. Editor dapat membuat, mengedit, dan mempublikasikan konten apa pun. Kontributor dapat membuat konten tetapi memerlukan persetujuan dari Editor atau Admin untuk mempublikasikan.'
                 ],
-                'sort_order' => 3,
-                'faq_category_id' => $shippingCategory->id,
+                'sort_order' => 2,
+                'faq_category_id' => $userCategory->id,
                 'is_active' => true,
                 'views_count' => 310,
                 'helpful_count' => 280,
                 'not_helpful_count' => 30,
                 'helpfulness_ratio' => 0.90,
             ],
-
-            // Account FAQs
             [
                 'question' => [
-                    'en' => 'How do I create an account?',
-                    'id' => 'Bagaimana cara membuat akun?'
+                    'en' => 'How can I reset a user\'s password?',
+                    'id' => 'Bagaimana cara mereset kata sandi pengguna?'
                 ],
                 'answer' => [
-                    'en' => 'Click on the "Sign Up" button at the top right of our website. Fill in your details and follow the instructions to verify your email address.',
-                    'id' => 'Klik tombol "Daftar" di kanan atas situs web kami. Isi detail Anda dan ikuti instruksi untuk memverifikasi alamat email Anda.'
+                    'en' => 'Admins can reset passwords from Users → Edit User → Security tab. The user will receive a password reset link via email.',
+                    'id' => 'Admin dapat mereset kata sandi dari Pengguna → Edit Pengguna → tab Keamanan. Pengguna akan menerima tautan reset kata sandi melalui email.'
                 ],
-                'sort_order' => 1,
-                'faq_category_id' => $accountCategory->id,
+                'sort_order' => 3,
+                'faq_category_id' => $userCategory->id,
                 'is_active' => true,
                 'views_count' => 125,
                 'helpful_count' => 110,
                 'not_helpful_count' => 15,
                 'helpfulness_ratio' => 0.88,
             ],
+
+            // Permissions & Roles FAQs
             [
                 'question' => [
-                    'en' => 'I forgot my password. How can I reset it?',
-                    'id' => 'Saya lupa kata sandi. Bagaimana cara meresetnya?'
+                    'en' => 'What permissions does each role have?',
+                    'id' => 'Izin apa yang dimiliki setiap peran?'
                 ],
                 'answer' => [
-                    'en' => 'Click on "Forgot Password" on the login page. Enter your email address, and we will send you a link to reset your password.',
-                    'id' => 'Klik "Lupa Kata Sandi" di halaman login. Masukkan alamat email Anda, dan kami akan mengirimi Anda tautan untuk mereset kata sandi Anda.'
+                    'en' => 'Super Admin has full system access. Admin manages users and content. Editor approves and publishes content. Author creates content. Contributor submits content for review. Subscriber has read-only access.',
+                    'id' => 'Super Admin memiliki akses sistem penuh. Admin mengelola pengguna dan konten. Editor menyetujui dan mempublikasikan konten. Penulis membuat konten. Kontributor mengirimkan konten untuk ditinjau. Pelanggan memiliki akses hanya-baca.'
                 ],
-                'sort_order' => 2,
-                'faq_category_id' => $accountCategory->id,
+                'sort_order' => 1,
+                'faq_category_id' => $permissionsCategory->id,
                 'is_active' => true,
-                'views_count' => 210,
-                'helpful_count' => 190,
-                'not_helpful_count' => 20,
+                'views_count' => 420,
+                'helpful_count' => 380,
+                'not_helpful_count' => 40,
                 'helpfulness_ratio' => 0.90,
             ],
             [
                 'question' => [
-                    'en' => 'How do I update my account information?',
-                    'id' => 'Bagaimana cara memperbarui informasi akun saya?'
+                    'en' => 'How do I customize role permissions?',
+                    'id' => 'Bagaimana cara menyesuaikan izin peran?'
                 ],
                 'answer' => [
-                    'en' => 'Log into your account and go to "Account Settings". From there, you can update your personal information, password, and communication preferences.',
-                    'id' => 'Masuk ke akun Anda dan pergi ke "Pengaturan Akun". Dari sana, Anda dapat memperbarui informasi pribadi, kata sandi, dan preferensi komunikasi Anda.'
+                    'en' => 'Only Super Admins can modify role permissions. Go to Settings → Roles & Permissions → Edit Role. Be cautious when modifying permissions as it affects system security.',
+                    'id' => 'Hanya Super Admin yang dapat mengubah izin peran. Pergi ke Pengaturan → Peran & Izin → Edit Peran. Hati-hati saat mengubah izin karena mempengaruhi keamanan sistem.'
                 ],
-                'sort_order' => 3,
-                'faq_category_id' => $accountCategory->id,
+                'sort_order' => 2,
+                'faq_category_id' => $permissionsCategory->id,
                 'is_active' => true,
                 'views_count' => 95,
                 'helpful_count' => 85,
                 'not_helpful_count' => 10,
                 'helpfulness_ratio' => 0.89,
             ],
-
-            // Returns & Refunds FAQs
             [
                 'question' => [
-                    'en' => 'What is your return policy?',
-                    'id' => 'Apa kebijakan pengembalian Anda?'
+                    'en' => 'Can I create custom roles?',
+                    'id' => 'Bisakah saya membuat peran kustom?'
                 ],
                 'answer' => [
-                    'en' => 'We offer a 30-day return policy for most items. Items must be unused and in their original packaging with all tags attached.',
-                    'id' => 'Kami menawarkan kebijakan pengembalian 30 hari untuk sebagian besar item. Barang harus tidak digunakan dan dalam kemasan aslinya dengan semua tag terpasang.'
+                    'en' => 'Yes, Super Admins can create custom roles with specific permissions. Go to Settings → Roles & Permissions → Create New Role and assign the desired permissions.',
+                    'id' => 'Ya, Super Admin dapat membuat peran kustom dengan izin spesifik. Pergi ke Pengaturan → Peran & Izin → Buat Peran Baru dan tetapkan izin yang diinginkan.'
+                ],
+                'sort_order' => 3,
+                'faq_category_id' => $permissionsCategory->id,
+                'is_active' => true,
+                'views_count' => 140,
+                'helpful_count' => 120,
+                'not_helpful_count' => 20,
+                'helpfulness_ratio' => 0.86,
+            ],
+
+            // Troubleshooting FAQs
+            [
+                'question' => [
+                    'en' => 'I can\'t access certain features. What should I do?',
+                    'id' => 'Saya tidak dapat mengakses fitur tertentu. Apa yang harus saya lakukan?'
+                ],
+                'answer' => [
+                    'en' => 'This is usually a permissions issue. Contact your administrator to verify your role permissions. Ensure you have the necessary permissions for the features you\'re trying to access.',
+                    'id' => 'Ini biasanya masalah izin. Hubungi administrator Anda untuk memverifikasi izin peran Anda. Pastikan Anda memiliki izin yang diperlukan untuk fitur yang ingin Anda akses.'
                 ],
                 'sort_order' => 1,
-                'faq_category_id' => $returnsCategory->id,
+                'faq_category_id' => $troubleshootingCategory->id,
                 'is_active' => true,
                 'views_count' => 280,
                 'helpful_count' => 250,
@@ -296,15 +279,15 @@ class FaqsSeeder extends Seeder
             ],
             [
                 'question' => [
-                    'en' => 'How long does it take to process a refund?',
-                    'id' => 'Berapa lama proses pengembalian dana?'
+                    'en' => 'Why are my images not displaying properly?',
+                    'id' => 'Mengapa gambar saya tidak ditampilkan dengan benar?'
                 ],
                 'answer' => [
-                    'en' => 'Once we receive your returned item, refunds are processed within 5-7 business days. The time it takes for the refund to appear in your account depends on your payment method and financial institution.',
-                    'id' => 'Setelah kami menerima barang yang dikembalikan, pengembalian dana diproses dalam 5-7 hari kerja. Waktu yang dibutuhkan untuk pengembalian dana muncul di akun Anda tergantung pada metode pembayaran dan institusi keuangan Anda.'
+                    'en' => 'Check the file format and size. Ensure images are in supported formats (JPG, PNG, GIF, WEBP) and under 10MB. Clear your browser cache and check the image URL.',
+                    'id' => 'Periksa format dan ukuran file. Pastikan gambar dalam format yang didukung (JPG, PNG, GIF, WEBP) dan di bawah 10MB. Bersihkan cache browser dan periksa URL gambar.'
                 ],
                 'sort_order' => 2,
-                'faq_category_id' => $returnsCategory->id,
+                'faq_category_id' => $troubleshootingCategory->id,
                 'is_active' => true,
                 'views_count' => 175,
                 'helpful_count' => 160,
@@ -313,20 +296,37 @@ class FaqsSeeder extends Seeder
             ],
             [
                 'question' => [
-                    'en' => 'Do you offer exchanges?',
-                    'id' => 'Apakah Anda menawarkan penukaran?'
+                    'en' => 'How do I recover deleted content?',
+                    'id' => 'Bagaimana cara memulihkan konten yang terhapus?'
                 ],
                 'answer' => [
-                    'en' => 'Yes, we offer exchanges for items in different sizes or colors, subject to availability. You can request an exchange by contacting our customer service team.',
-                    'id' => 'Ya, kami menawarkan penukaran untuk item dalam ukuran atau warna berbeda, tergantung ketersediaan. Anda dapat meminta penukaran dengan menghubungi tim layanan pelanggan kami.'
+                    'en' => 'Check the trash/recycle bin in the content section. Deleted items are kept for 30 days before permanent deletion. Only users with appropriate permissions can restore content.',
+                    'id' => 'Periksa tempat sampah/daur ulang di bagian konten. Item yang dihapus disimpan selama 30 hari sebelum penghapusan permanen. Hanya pengguna dengan izin yang sesuai yang dapat memulihkan konten.'
                 ],
                 'sort_order' => 3,
-                'faq_category_id' => $returnsCategory->id,
+                'faq_category_id' => $troubleshootingCategory->id,
                 'is_active' => true,
-                'views_count' => 140,
-                'helpful_count' => 120,
+                'views_count' => 210,
+                'helpful_count' => 190,
                 'not_helpful_count' => 20,
-                'helpfulness_ratio' => 0.86,
+                'helpfulness_ratio' => 0.90,
+            ],
+            [
+                'question' => [
+                    'en' => 'The system is running slow. What can I do?',
+                    'id' => 'Sistem berjalan lambat. Apa yang bisa saya lakukan?'
+                ],
+                'answer' => [
+                    'en' => 'Clear your browser cache, try a different browser, or check your internet connection. If the issue persists, contact support as it might be a server-side issue.',
+                    'id' => 'Bersihkan cache browser, coba browser berbeda, atau periksa koneksi internet Anda. Jika masalah berlanjut, hubungi dukungan karena mungkin masalah di sisi server.'
+                ],
+                'sort_order' => 4,
+                'faq_category_id' => $troubleshootingCategory->id,
+                'is_active' => true,
+                'views_count' => 95,
+                'helpful_count' => 80,
+                'not_helpful_count' => 15,
+                'helpfulness_ratio' => 0.84,
             ],
         ];
 
