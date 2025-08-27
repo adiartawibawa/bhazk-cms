@@ -20,12 +20,12 @@ class UserRoleSeeder extends Seeder
 
         // Buat roles default
         $roles = [
-            'admin',
-            'author',
-            'contributor',
-            'editor',
-            'subscriber',
-            'user',
+            User::ROLE_ADMIN,
+            User::ROLE_AUTHOR,
+            User::ROLE_CONTRIBUTOR,
+            User::ROLE_EDITOR,
+            User::ROLE_SUBSCRIBER,
+            User::ROLE_USER,
         ];
 
         foreach ($roles as $roleName) {
@@ -56,7 +56,7 @@ class UserRoleSeeder extends Seeder
             ]
         );
 
-        $admin->assignRole('admin');
+        $admin->assignRole(User::ROLE_ADMIN);
 
         // Buat user dengan role lainnya
         $roleUsers = [
@@ -115,7 +115,7 @@ class UserRoleSeeder extends Seeder
                     'email_verified_at' => now(),
                 ]
             );
-            $author->assignRole('author');
+            $author->assignRole(User::ROLE_AUTHOR);
         }
 
         // Buat beberapa subscriber tambahan
@@ -128,7 +128,7 @@ class UserRoleSeeder extends Seeder
                     'email_verified_at' => now(),
                 ]
             );
-            $subscriber->assignRole('subscriber');
+            $subscriber->assignRole(User::ROLE_SUBSCRIBER);
         }
 
         // Buat beberapa regular user
@@ -141,7 +141,7 @@ class UserRoleSeeder extends Seeder
                     'email_verified_at' => now(),
                 ]
             );
-            $user->assignRole('user');
+            $user->assignRole(User::ROLE_USER);
         }
     }
 }

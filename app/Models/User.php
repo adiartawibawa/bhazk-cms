@@ -75,6 +75,13 @@ class User extends Authenticatable implements FilamentUser, HasAvatar, HasMedia,
         ];
     }
 
+    public const ROLE_ADMIN = 'admin';
+    public const ROLE_AUTHOR = 'author';
+    public const ROLE_CONTRIBUTOR = 'contributor';
+    public const ROLE_EDITOR = 'editor';
+    public const ROLE_SUBSCRIBER = 'subscriber';
+    public const ROLE_USER = 'user';
+
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
