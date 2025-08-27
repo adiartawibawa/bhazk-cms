@@ -39,7 +39,7 @@ class TicketResource extends Resource
                     ->required(),
                 Forms\Components\Select::make('assigned_to')
                     ->label('Assigned Agent')
-                    ->options(User::role('agent')->pluck('email', 'id'))
+                    ->options(User::role(User::ROLE_ADMIN)->pluck('email', 'id'))
                     ->searchable()
                     ->preload(),
                 Forms\Components\TextInput::make('subject')
@@ -173,7 +173,7 @@ class TicketResource extends Resource
                     ]),
                 Tables\Filters\SelectFilter::make('assigned_to')
                     ->label('Assigned Agent')
-                    ->options(User::role('agent')->pluck('email', 'id')),
+                    ->options(User::role(User::ROLE_ADMIN)->pluck('email', 'id')),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),

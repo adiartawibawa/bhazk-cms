@@ -164,7 +164,7 @@ class TicketingSystemSeeder extends Seeder
                     'ticket_id' => $ticket->id,
                     'user_id' => $ticket->assigned_to ?? $agents[0]->id,
                     'message' => $this->getAgentResponse($ticket->type, $ticket->status),
-                    'message_type' => TicketMessage::MESSAGE_TYPE_AGENT,
+                    'message_type' => TicketMessage::MESSAGE_TYPE_ADMIN,
                     'is_internal' => false,
                     'is_first_response' => true,
                     'ip_address' => '127.0.0.1',

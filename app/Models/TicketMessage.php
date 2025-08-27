@@ -49,7 +49,7 @@ class TicketMessage extends Model
      * The possible message types.
      */
     public const MESSAGE_TYPE_USER = 'user';
-    public const MESSAGE_TYPE_AGENT = 'agent';
+    public const MESSAGE_TYPE_ADMIN = 'admin';
     public const MESSAGE_TYPE_SYSTEM = 'system';
 
     /**
@@ -85,11 +85,11 @@ class TicketMessage extends Model
     }
 
     /**
-     * Check if the message is from an agent.
+     * Check if the message is from an admin.
      */
-    public function isFromAgent(): bool
+    public function isFromAdmin(): bool
     {
-        return $this->message_type === self::MESSAGE_TYPE_AGENT;
+        return $this->message_type === self::MESSAGE_TYPE_ADMIN;
     }
 
     /**

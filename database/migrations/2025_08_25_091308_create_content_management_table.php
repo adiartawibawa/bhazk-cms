@@ -326,7 +326,7 @@ return new class extends Migration
             $table->uuid('ticket_id');
             $table->uuid('user_id')->nullable();
             $table->text('message');
-            $table->enum('message_type', ['user', 'agent', 'system'])->default('user');
+            $table->enum('message_type', ['user', 'admin', 'system'])->default('user');
             $table->boolean('is_internal')->default(false);
             $table->boolean('is_first_response')->default(false);
             $table->json('attachments')->nullable();

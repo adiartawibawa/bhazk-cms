@@ -25,7 +25,7 @@ class MessagesRelationManager extends RelationManager
                 Forms\Components\Select::make('message_type')
                     ->options([
                         TicketMessage::MESSAGE_TYPE_USER => 'User',
-                        TicketMessage::MESSAGE_TYPE_AGENT => 'Agent',
+                        TicketMessage::MESSAGE_TYPE_ADMIN => 'Admin',
                         TicketMessage::MESSAGE_TYPE_SYSTEM => 'System',
                     ])
                     ->required()
@@ -51,7 +51,7 @@ class MessagesRelationManager extends RelationManager
                 Tables\Columns\BadgeColumn::make('message_type')
                     ->colors([
                         'primary' => TicketMessage::MESSAGE_TYPE_USER,
-                        'success' => TicketMessage::MESSAGE_TYPE_AGENT,
+                        'success' => TicketMessage::MESSAGE_TYPE_ADMIN,
                         'secondary' => TicketMessage::MESSAGE_TYPE_SYSTEM,
                     ]),
                 Tables\Columns\IconColumn::make('is_internal')
