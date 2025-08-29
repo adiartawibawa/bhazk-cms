@@ -25,6 +25,8 @@ class FaqResource extends Resource
 
     protected static ?string $navigationGroup = 'FAQ Management';
 
+    protected static ?int $navigationSort = 2;
+
     public static function form(Form $form): Form
     {
         return $form
