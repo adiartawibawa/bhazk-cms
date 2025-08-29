@@ -19,9 +19,13 @@ class ManageAppearance extends SettingsPage
 
     protected static ?string $cluster = Settings::class;
 
-    protected static ?string $navigationLabel = 'Appearance Settings';
+    protected static ?string $navigationLabel = 'Appearance';
 
     protected static ?string $title = 'Manage Appearance Settings';
+
+    protected static ?string $navigationGroup = 'Site Configuration';
+
+    protected static ?int $navigationSort = 3;
 
     public function form(Form $form): Form
     {

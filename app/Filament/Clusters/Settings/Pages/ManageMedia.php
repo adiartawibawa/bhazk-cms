@@ -16,9 +16,13 @@ class ManageMedia extends SettingsPage
 
     protected static ?string $cluster = Settings::class;
 
-    protected static ?string $navigationLabel = 'Media Settings';
+    protected static ?string $navigationLabel = 'Media';
 
     protected static ?string $title = 'Manage Media Settings';
+
+    protected static ?string $navigationGroup = 'Content Management';
+
+    protected static ?int $navigationSort = 3;
 
     public function form(Form $form): Form
     {

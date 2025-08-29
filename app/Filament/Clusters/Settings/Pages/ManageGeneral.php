@@ -18,9 +18,13 @@ class ManageGeneral extends SettingsPage
 
     protected static ?string $cluster = Settings::class;
 
-    protected static ?string $navigationLabel = 'General Settings';
+    protected static ?string $navigationLabel = 'General';
 
     protected static ?string $title = 'Manage General Settings';
+
+    protected static ?string $navigationGroup = 'Site Configuration';
+
+    protected static ?int $navigationSort = 1;
 
     public function form(Form $form): Form
     {
@@ -29,6 +33,7 @@ class ManageGeneral extends SettingsPage
                 Forms\Components\Section::make('General Settings')
                     ->description('Configure basic site information and global settings')
                     ->icon('heroicon-o-globe-alt')
+                    ->collapsible()
                     ->schema([
                         Forms\Components\Grid::make(2)
                             ->schema([
@@ -70,6 +75,7 @@ class ManageGeneral extends SettingsPage
                 Forms\Components\Section::make('Date & Time Settings')
                     ->description('Configure how dates and times are displayed throughout the site')
                     ->icon('heroicon-o-clock')
+                    ->collapsible()
                     ->schema([
                         Forms\Components\Grid::make(3)
                             ->schema([
@@ -112,7 +118,6 @@ class ManageGeneral extends SettingsPage
                                 $now = now()->setTimezone($timezone);
                                 return $now->format($dateFormat) . ' ' . $now->format($timeFormat);
                             })
-                            ->extraAttributes(['class' => 'bg-gray-100 p-4 rounded-lg font-mono text-center text-lg'])
                             ->columnSpanFull(),
                     ]),
             ]);

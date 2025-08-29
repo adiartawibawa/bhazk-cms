@@ -18,9 +18,13 @@ class ManageContent extends SettingsPage
 
     protected static ?string $cluster = Settings::class;
 
-    protected static ?string $navigationLabel = 'Content Settings';
+    protected static ?string $navigationLabel = 'Content';
 
     protected static ?string $title = 'Manage Content Settings';
+
+    protected static ?string $navigationGroup = 'Content Management';
+
+    protected static ?int $navigationSort = 2;
 
     public function form(Form $form): Form
     {
@@ -30,6 +34,7 @@ class ManageContent extends SettingsPage
                 Forms\Components\Section::make('Front Page Settings')
                     ->description('Configure how your front page is displayed to visitors')
                     ->icon('heroicon-o-home')
+                    ->collapsible()
                     ->schema([
                         Forms\Components\Radio::make('front_page_type')
                             ->label('Front Page Display')
@@ -56,6 +61,7 @@ class ManageContent extends SettingsPage
                 Forms\Components\Section::make('Content Settings')
                     ->description('Configure how your content is displayed and managed')
                     ->icon('heroicon-o-document-text')
+                    ->collapsible()
                     ->schema([
                         Forms\Components\TextInput::make('posts_per_page')
                             ->label('Posts Per Page')
@@ -71,6 +77,7 @@ class ManageContent extends SettingsPage
                 Forms\Components\Section::make('Comment Settings')
                     ->description('Manage how comments work on your site')
                     ->icon('heroicon-o-chat-bubble-left-ellipsis')
+                    ->collapsible()
                     ->schema([
                         Forms\Components\Toggle::make('comment_status')
                             ->label('Allow Comments')
@@ -92,6 +99,7 @@ class ManageContent extends SettingsPage
                 Forms\Components\Section::make('Permalink Settings')
                     ->description('Customize how your content URLs are structured')
                     ->icon('heroicon-o-link')
+                    ->collapsible()
                     ->schema([
                         Forms\Components\Select::make('permalink_structure')
                             ->label('Permalink Structure')

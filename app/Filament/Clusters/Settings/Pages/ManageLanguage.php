@@ -16,9 +16,13 @@ class ManageLanguage extends SettingsPage
 
     protected static ?string $cluster = Settings::class;
 
-    protected static ?string $navigationLabel = 'Language Settings';
+    protected static ?string $navigationLabel = 'Language';
 
     protected static ?string $title = 'Manage Language Settings';
+
+    protected static ?string $navigationGroup = 'Site Configuration';
+
+    protected static ?int $navigationSort = 4;
 
     public function form(Form $form): Form
     {
@@ -27,6 +31,7 @@ class ManageLanguage extends SettingsPage
                 Forms\Components\Section::make('Language Settings')
                     ->description('Configure the language preferences for your application')
                     ->icon('heroicon-o-language')
+                    ->collapsible()
                     ->schema([
                         Forms\Components\Select::make('default_language')
                             ->label('Default Language')

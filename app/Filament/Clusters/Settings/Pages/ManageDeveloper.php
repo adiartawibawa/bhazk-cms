@@ -16,9 +16,13 @@ class ManageDeveloper extends SettingsPage
 
     protected static ?string $cluster = Settings::class;
 
-    protected static ?string $navigationLabel = 'Developer Settings';
+    protected static ?string $navigationLabel = 'Developer';
 
     protected static ?string $title = 'Manage Developer Settings';
+
+    protected static ?string $navigationGroup = 'Advanced Settings';
+
+    protected static ?int $navigationSort = 7;
 
     public function form(Form $form): Form
     {
@@ -27,6 +31,7 @@ class ManageDeveloper extends SettingsPage
                 Forms\Components\Section::make('System Settings')
                     ->description('Configure system behavior and error handling')
                     ->icon('heroicon-o-cog')
+                    ->collapsible()
                     ->schema([
                         Forms\Components\Grid::make()
                             ->schema([
@@ -62,6 +67,7 @@ class ManageDeveloper extends SettingsPage
                 Forms\Components\Section::make('Debug Information')
                     ->description('Current system status and recommendations')
                     ->icon('heroicon-o-information-circle')
+                    ->collapsible()
                     ->schema([
                         Forms\Components\Placeholder::make('debug_status')
                             ->label('Debug Mode Status')

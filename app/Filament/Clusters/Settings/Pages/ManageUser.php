@@ -17,9 +17,13 @@ class ManageUser extends SettingsPage
 
     protected static ?string $cluster = Settings::class;
 
-    protected static ?string $navigationLabel = 'User Settings';
+    protected static ?string $navigationLabel = 'User';
 
     protected static ?string $title = 'Manage User Settings';
+
+    protected static ?string $navigationGroup = 'User Management';
+
+    protected static ?int $navigationSort = 5;
 
     public function form(Form $form): Form
     {

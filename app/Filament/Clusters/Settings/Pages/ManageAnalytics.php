@@ -16,9 +16,13 @@ class ManageAnalytics extends SettingsPage
 
     protected static ?string $cluster = Settings::class;
 
-    protected static ?string $navigationLabel = 'Analytics Settings';
+    protected static ?string $navigationLabel = 'Analytics';
 
     protected static ?string $title = 'Manage Analytics Settings';
+
+    protected static ?string $navigationGroup = 'Analytics & Tracking';
+
+    protected static ?int $navigationSort = 2;
 
     public function form(Form $form): Form
     {
