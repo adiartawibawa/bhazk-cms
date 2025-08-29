@@ -24,7 +24,7 @@ class GeneralSettings extends Settings
         return [
             'site_name' => 'My CMS',
             'site_url' => config('app.url'),
-            'admin_url' => config('app.url') . '/admin',
+            'admin_url' => config('app.url') . '/backend',
             'admin_email' => 'admin@example.com',
             'date_format' => 'd F Y',
             'time_format' => 'H:i',

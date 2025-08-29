@@ -3,7 +3,6 @@
 namespace App\Settings;
 
 use Spatie\LaravelSettings\Settings;
-use Spatie\LaravelSettings\SettingsCasts\ArraySettingsCast;
 
 class LanguageSettings extends Settings
 {
@@ -14,13 +13,6 @@ class LanguageSettings extends Settings
     public static function group(): string
     {
         return 'language';
-    }
-
-    public static function casts(): array
-    {
-        return [
-            'supported_languages' => ArraySettingsCast::class,
-        ];
     }
 
     public static function defaults(): array

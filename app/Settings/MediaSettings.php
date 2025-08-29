@@ -3,7 +3,6 @@
 namespace App\Settings;
 
 use Spatie\LaravelSettings\Settings;
-use Spatie\LaravelSettings\SettingsCasts\ArraySettingsCast;
 
 class MediaSettings extends Settings
 {
@@ -16,15 +15,6 @@ class MediaSettings extends Settings
     public static function group(): string
     {
         return 'media';
-    }
-
-    public static function casts(): array
-    {
-        return [
-            'thumbnail_size' => ArraySettingsCast::class,
-            'medium_size' => ArraySettingsCast::class,
-            'large_size' => ArraySettingsCast::class,
-        ];
     }
 
     public static function defaults(): array

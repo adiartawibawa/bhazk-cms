@@ -3,7 +3,6 @@
 namespace App\Settings;
 
 use Spatie\LaravelSettings\Settings;
-use Spatie\LaravelSettings\SettingsCasts\ArraySettingsCast;
 
 class AnalyticsSettings extends Settings
 {
@@ -21,14 +20,6 @@ class AnalyticsSettings extends Settings
     public static function group(): string
     {
         return 'analytics';
-    }
-
-    public static function casts(): array
-    {
-        return [
-            'google_analytics_cache_duration' => ArraySettingsCast::class,
-            'google_analytics_credentials' => ArraySettingsCast::class,
-        ];
     }
 
     public static function defaults(): array
