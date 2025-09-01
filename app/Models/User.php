@@ -2,12 +2,11 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
-
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Models\Contracts\HasAvatar;
 use Filament\Models\Contracts\HasName;
 use Filament\Panel;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -16,16 +15,18 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
+use Laravel\Fortify\TwoFactorAuthenticatable;
 use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\Permission\Traits\HasRoles;
 
-class User extends Authenticatable implements FilamentUser, HasAvatar, HasMedia, HasName
+class User extends Authenticatable implements FilamentUser, HasAvatar, HasMedia, HasName, MustVerifyEmail
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable, HasUuids, HasRoles, InteractsWithMedia, SoftDeletes, LogsActivity;
+    use HasFactory, Notifiable, HasUuids, HasRoles, InteractsWithMedia, SoftDeletes, LogsActivity, TwoFactorAuthenticatable;
 
     /**
      * The attributes that are mass assignable.
@@ -40,10 +41,11 @@ class User extends Authenticatable implements FilamentUser, HasAvatar, HasMedia,
         'is_active',
         'timezone',
         'preferences',
-        'avatar_url',
         'password',
         'created_by',
         'updated_by',
+        'last_login_at',
+        'last_login_ip',
     ];
 
     /**
@@ -54,6 +56,9 @@ class User extends Authenticatable implements FilamentUser, HasAvatar, HasMedia,
     protected $hidden = [
         'password',
         'remember_token',
+        'two_factor_secret',
+        'two_factor_recovery_codes',
+        'two_factor_confirmed_at',
     ];
 
     /**
@@ -67,7 +72,6 @@ class User extends Authenticatable implements FilamentUser, HasAvatar, HasMedia,
             'email_verified_at' => 'datetime',
             'last_login_at' => 'datetime',
             'last_login_ip' => 'string',
-            'is_admin' => 'boolean',
             'is_active' => 'boolean',
             'preferences' => 'array',
             'password' => 'hashed',
@@ -98,7 +102,9 @@ class User extends Authenticatable implements FilamentUser, HasAvatar, HasMedia,
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
-            ->logOnly(['*']);
+            ->logOnly(['username', 'email', 'is_active'])
+            ->logOnlyDirty()
+            ->dontSubmitEmptyLogs();
     }
 
     public function canAccessPanel(Panel $panel): bool
@@ -172,6 +178,11 @@ class User extends Authenticatable implements FilamentUser, HasAvatar, HasMedia,
         return "{$this->first_name} {$this->last_name}" ?: $this->username;
     }
 
+    public function getFullNameAttribute(): string
+    {
+        return $this->getFilamentName();
+    }
+
     /**
      * Register media collections for the user.
      */
@@ -183,19 +194,32 @@ class User extends Authenticatable implements FilamentUser, HasAvatar, HasMedia,
             ->useDisk('public');
     }
 
-    /**
-     * Get the Filament avatar URL using media library.
-     */
     public function getFilamentAvatarUrl(): ?string
     {
-        // First try to get from media library
         if ($this->hasMedia('avatars')) {
-            return $this->getFirstMediaUrl('avatars', 'preview');
+            return $this->getFirstMediaUrl('avatars');
         }
 
-        // Fallback to Gravatar
-        $hash = md5(strtolower(trim($this->email)));
+        return $this->defaultAvatarUrl();
+    }
+
+    protected function defaultAvatarUrl(): string
+    {
+        $email = $this->email ?: 'default@example.com';
+        $hash  = md5(strtolower(trim($email)));
         return "https://www.gravatar.com/avatar/{$hash}?d=identicon";
+    }
+
+    // Helper method untuk mendapatkan avatar
+    public function getAvatar(): string
+    {
+        return $this->getFilamentAvatarUrl();
+    }
+
+    // Check if user is admin
+    public function isAdministrator(): bool
+    {
+        return $this->hasRole(self::ROLE_ADMIN);
     }
 
     protected static function booted()
@@ -210,6 +234,10 @@ class User extends Authenticatable implements FilamentUser, HasAvatar, HasMedia,
             if (Auth::check()) {
                 $model->updated_by = Auth::id();
             }
+        });
+
+        static::deleting(function ($user) {
+            $user->clearMediaCollection('avatars');
         });
     }
 }
