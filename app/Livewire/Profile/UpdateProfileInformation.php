@@ -38,7 +38,6 @@ class UpdateProfileInformation extends Component implements HasForms, HasActions
             'first_name' => $user->first_name,
             'last_name'  => $user->last_name,
             'email'      => $user->email,
-            'avatar'     => $user->getFirstMediaUrl('avatars')
         ]);
     }
 
@@ -54,6 +53,7 @@ class UpdateProfileInformation extends Component implements HasForms, HasActions
                         SpatieMediaLibraryFileUpload::make('avatar')
                             ->label('Profile Avatar')
                             ->collection('avatars')
+                            ->model(Auth::user())
                             ->avatar()
                             ->image()
                             ->imageEditor()

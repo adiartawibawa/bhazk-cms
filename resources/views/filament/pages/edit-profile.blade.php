@@ -12,7 +12,11 @@
     @endif
 
     @if (Features::enabled(Features::twoFactorAuthentication()))
-        {{-- @livewire(App\Livewire\Profile\TwoFactorAuthentication::class) --}}
+        @livewire(App\Livewire\Profile\TwoFactorAuthentication::class)
     @endif
+
+    @livewire(App\Livewire\Profile\LogoutOtherBrowserSessions::class)
+
+    @livewire(App\Livewire\Profile\DeleteAccount::class)
 
 </x-filament-panels::page>
