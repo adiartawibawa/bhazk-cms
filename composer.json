@@ -13,6 +13,7 @@
         "filament/spatie-laravel-media-library-plugin": "^3.0",
         "filament/spatie-laravel-settings-plugin": "^3.2",
         "filament/spatie-laravel-translatable-plugin": "^3.2",
+        "flowframe/laravel-trend": "^0.4.0",
         "laravel/fortify": "^1.29",
         "laravel/framework": "^12.0",
         "laravel/tinker": "^2.10.1",

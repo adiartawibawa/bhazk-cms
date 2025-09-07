@@ -188,6 +188,12 @@ class UserResource extends Resource
             ->filters([
                 Tables\Filters\TrashedFilter::make(),
 
+                Tables\Filters\SelectFilter::make('roles')
+                    ->relationship('roles', 'name')
+                    ->multiple()
+                    ->preload()
+                    ->label('Filter by Role'),
+
                 Tables\Filters\Filter::make('is_active')
                     ->label('Active Users')
                     ->query(fn(Builder $query) => $query->where('is_active', true)),
