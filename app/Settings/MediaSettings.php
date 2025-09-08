@@ -6,7 +6,8 @@ use Spatie\LaravelSettings\Settings;
 
 class MediaSettings extends Settings
 {
-    public string $upload_organization;
+    public ?string $upload_organization;
+    public ?string $storage_disk;
     public array $thumbnail_size;
     public array $medium_size;
     public array $large_size;
@@ -21,6 +22,7 @@ class MediaSettings extends Settings
     {
         return [
             'upload_organization' => 'year_month',
+            'storage_disk'        => config('filesystems.default', 'public'),
             'thumbnail_size' => ['width' => 150, 'height' => 150],
             'medium_size' => ['width' => 300, 'height' => 300],
             'large_size' => ['width' => 1024, 'height' => 1024],

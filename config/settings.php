@@ -1,5 +1,15 @@
 <?php
 
+use App\Settings\AnalyticsSettings;
+use App\Settings\AppearanceSettings;
+use App\Settings\ContentSettings;
+use App\Settings\DeveloperSettings;
+use App\Settings\GeneralSettings;
+use App\Settings\LanguageSettings;
+use App\Settings\MediaSettings;
+use App\Settings\SeoSettings;
+use App\Settings\UserSettings;
+
 return [
 
     /*
@@ -7,7 +17,15 @@ return [
      * put them (manually) here.
      */
     'settings' => [
-
+        AnalyticsSettings::class,
+        AppearanceSettings::class,
+        ContentSettings::class,
+        DeveloperSettings::class,
+        GeneralSettings::class,
+        LanguageSettings::class,
+        MediaSettings::class,
+        SeoSettings::class,
+        UserSettings::class,
     ],
 
     /*
@@ -74,7 +92,7 @@ return [
     'global_casts' => [
         DateTimeInterface::class => Spatie\LaravelSettings\SettingsCasts\DateTimeInterfaceCast::class,
         DateTimeZone::class => Spatie\LaravelSettings\SettingsCasts\DateTimeZoneCast::class,
-//        Spatie\DataTransferObject\DataTransferObject::class => Spatie\LaravelSettings\SettingsCasts\DtoCast::class,
+        //        Spatie\DataTransferObject\DataTransferObject::class => Spatie\LaravelSettings\SettingsCasts\DtoCast::class,
         Spatie\LaravelData\Data::class => Spatie\LaravelSettings\SettingsCasts\DataCast::class,
     ],
 

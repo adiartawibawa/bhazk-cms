@@ -55,7 +55,7 @@ class ManageUser extends SettingsPage
                     ->icon('heroicon-o-shield-check')
                     ->collapsible()
                     ->schema([
-                        Forms\Components\Select::make('default_role')
+                        Forms\Components\Select::make('default_user_role')
                             ->label('Default Role for New Users')
                             ->options(array_intersect_key(User::defaultRoles(), array_flip([
                                 User::ROLE_AUTHOR,

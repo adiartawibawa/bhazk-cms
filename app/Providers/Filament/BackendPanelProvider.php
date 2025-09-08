@@ -4,6 +4,13 @@ namespace App\Providers\Filament;
 
 use App\Filament\Pages\Dashboard;
 use App\Filament\Pages\EditProfile;
+use App\Settings\AppearanceSettings;
+use App\Settings\DeveloperSettings;
+use App\Settings\GeneralSettings;
+use App\Settings\LanguageSettings;
+use App\Settings\MediaSettings;
+use App\Settings\SeoSettings;
+use App\Settings\UserSettings;
 use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
@@ -19,6 +26,7 @@ use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 use Rmsramos\Activitylog\ActivitylogPlugin;
 
@@ -26,18 +34,39 @@ class BackendPanelProvider extends PanelProvider
 {
     public function panel(Panel $panel): Panel
     {
+        $general    = app(GeneralSettings::class);
+        $appearance = app(AppearanceSettings::class);
+        $language   = app(LanguageSettings::class);
+        $developer  = app(DeveloperSettings::class);
+        $user       = app(UserSettings::class);
+        $seo        = app(SeoSettings::class);
+        $media      = app(MediaSettings::class);
+
+        if ($user->user_registration ?? true) {
+            $panel->registration();
+        }
+
+        if ($user->email_verification ?? true) {
+            $panel->emailVerification();
+        }
+
         return $panel
             ->default()
             ->id('backend')
             ->path('backend')
             ->login()
-            ->registration()
             ->passwordReset()
-            ->emailVerification()
             ->profile(EditProfile::class)
+
+            ->brandName($general->site_name ?? 'Admin Panel')
+            ->favicon(Storage::url($seo->site_favicon) ?? null)
+
             ->colors([
-                'primary' => Color::Red,
+                'primary' => $appearance->primary_color
+                    ? Color::hex($appearance->primary_color)
+                    : Color::Red,
             ])
+
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
             ->discoverClusters(in: app_path('Filament/Clusters'), for: 'App\\Filament\\Clusters')
@@ -87,7 +116,7 @@ class BackendPanelProvider extends PanelProvider
                         'sm' => 2,
                     ]),
                 SpatieLaravelTranslatablePlugin::make()
-                    ->defaultLocales(['en', 'id']),
+                    ->defaultLocales($language->supported_languages ?? ['en']),
             ]);
     }
 }

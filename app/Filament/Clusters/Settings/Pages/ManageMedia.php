@@ -44,6 +44,15 @@ class ManageMedia extends SettingsPage
                             ->required()
                             ->native(false)
                             ->helperText('Folder structure for storing uploaded files.'),
+
+                        Forms\Components\Select::make('storage_disk')
+                            ->label('Storage Disk')
+                            ->options(collect(config('filesystems.disks'))
+                                ->mapWithKeys(fn($disk, $key) => [$key => ucfirst($key)]))
+                            ->default(config('filesystems.default'))
+                            ->required()
+                            ->native(false)
+                            ->helperText('Select which filesystem disk to use for storing uploaded files.'),
                     ]),
 
                 Forms\Components\Section::make('Image Sizes')

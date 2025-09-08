@@ -6,12 +6,12 @@ use Spatie\LaravelSettings\Settings;
 
 class SeoSettings extends Settings
 {
-    public string $meta_title;
-    public string $meta_description;
-    public string $meta_keywords;
-    public string $site_logo;
-    public string $site_favicon;
-    public string $robots_txt;
+    public ?string $meta_title;
+    public ?string $meta_description;
+    public ?string $meta_keywords;
+    public ?string $site_logo;
+    public ?string $site_favicon;
+    public ?string $robots_txt;
 
     public static function group(): string
     {
