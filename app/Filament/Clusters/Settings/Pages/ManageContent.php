@@ -5,10 +5,10 @@ namespace App\Filament\Clusters\Settings\Pages;
 use App\Filament\Clusters\Settings;
 use App\Models\Content;
 use App\Settings\ContentSettings;
-use App\Models\Post; // kalau kamu punya model Post
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Pages\SettingsPage;
+use Illuminate\Contracts\Support\Htmlable;
 
 class ManageContent extends SettingsPage
 {
@@ -18,11 +18,20 @@ class ManageContent extends SettingsPage
 
     protected static ?string $cluster = Settings::class;
 
-    protected static ?string $navigationLabel = 'Content';
+    public static function getNavigationLabel(): string
+    {
+        return __('resource.settings.content.navigation.label');
+    }
 
-    protected static ?string $title = 'Manage Content Settings';
+    public function getTitle(): string|Htmlable
+    {
+        return __('resource.settings.content.title');
+    }
 
-    protected static ?string $navigationGroup = 'Content Management';
+    public static function getNavigationGroup(): string
+    {
+        return __('resource.settings.content.navigation.group');
+    }
 
     protected static ?int $navigationSort = 2;
 
@@ -30,17 +39,17 @@ class ManageContent extends SettingsPage
     {
         return $form
             ->schema([
-                // Section for Front Page Settings
-                Forms\Components\Section::make('Front Page Settings')
-                    ->description('Configure how your front page is displayed to visitors')
+                // Front Page Settings
+                Forms\Components\Section::make(__('resource.settings.content.sections.front_page.label'))
+                    ->description(__('resource.settings.content.sections.front_page.description'))
                     ->icon('heroicon-o-home')
                     ->collapsible()
                     ->schema([
                         Forms\Components\Radio::make('front_page_type')
-                            ->label('Front Page Display')
+                            ->label(__('resource.settings.content.fields.front_page_type'))
                             ->options([
-                                'latest_posts' => 'Your latest posts',
-                                'static_page'  => 'A static page',
+                                'latest_posts' => __('resource.settings.content.options.front_page_type.latest_posts'),
+                                'static_page'  => __('resource.settings.content.options.front_page_type.static_page'),
                             ])
                             ->default('latest_posts')
                             ->required()
@@ -49,78 +58,77 @@ class ManageContent extends SettingsPage
                             ->columnSpanFull(),
 
                         Forms\Components\Select::make('front_page_id')
-                            ->label('Front Page')
+                            ->label(__('resource.settings.content.fields.front_page_id'))
                             ->options(Content::query()->pluck('title', 'id'))
                             ->searchable()
                             ->visible(fn($get) => $get('front_page_type') === 'static_page')
-                            ->helperText('Select the page to use as your front page (if using static page).')
+                            ->helperText(__('resource.settings.content.helpers.front_page_id'))
                             ->columnSpanFull(),
                     ]),
 
-                // Section for Content Settings
-                Forms\Components\Section::make('Content Settings')
-                    ->description('Configure how your content is displayed and managed')
+                // Content Settings
+                Forms\Components\Section::make(__('resource.settings.content.sections.content.label'))
+                    ->description(__('resource.settings.content.sections.content.description'))
                     ->icon('heroicon-o-document-text')
                     ->collapsible()
                     ->schema([
                         Forms\Components\TextInput::make('posts_per_page')
-                            ->label('Posts Per Page')
+                            ->label(__('resource.settings.content.fields.posts_per_page'))
                             ->numeric()
                             ->minValue(1)
                             ->default(10)
                             ->required()
-                            ->suffix('posts')
-                            ->helperText('Number of posts to show on archive pages.'),
+                            ->suffix(__('resource.settings.content.placeholders.posts_per_page'))
+                            ->helperText(__('resource.settings.content.helpers.posts_per_page')),
                     ]),
 
-                // Section for Comment Settings
-                Forms\Components\Section::make('Comment Settings')
-                    ->description('Manage how comments work on your site')
+                // Comment Settings
+                Forms\Components\Section::make(__('resource.settings.content.sections.comments.label'))
+                    ->description(__('resource.settings.content.sections.comments.description'))
                     ->icon('heroicon-o-chat-bubble-left-ellipsis')
                     ->collapsible()
                     ->schema([
                         Forms\Components\Toggle::make('comment_status')
-                            ->label('Allow Comments')
+                            ->label(__('resource.settings.content.fields.comment_status'))
                             ->default(true)
                             ->onColor('success')
                             ->offColor('danger')
                             ->inline(false),
 
                         Forms\Components\Toggle::make('comment_moderation')
-                            ->label('Require Comment Moderation')
+                            ->label(__('resource.settings.content.fields.comment_moderation'))
                             ->default(true)
                             ->onColor('warning')
                             ->offColor('gray')
                             ->inline(false)
-                            ->helperText('All comments must be approved by an administrator before being published.'),
+                            ->helperText(__('resource.settings.content.helpers.comment_moderation')),
                     ]),
 
-                // Section for Permalink Settings
-                Forms\Components\Section::make('Permalink Settings')
-                    ->description('Customize how your content URLs are structured')
+                // Permalink Settings
+                Forms\Components\Section::make(__('resource.settings.content.sections.permalinks.label'))
+                    ->description(__('resource.settings.content.sections.permalinks.description'))
                     ->icon('heroicon-o-link')
                     ->collapsible()
                     ->schema([
                         Forms\Components\Select::make('permalink_structure')
-                            ->label('Permalink Structure')
+                            ->label(__('resource.settings.content.fields.permalink_structure'))
                             ->options([
-                                '/%postname%/' => 'Post Name (/sample-post/)',
-                                '/%post_id%/'  => 'Post ID (/123/)',
-                                '/%year%/%monthnum%/%postname%/' => 'Date and Name (/2025/08/sample-post/)',
+                                '/%postname%/' => __('resource.settings.content.options.permalink_structure.postname'),
+                                '/%post_id%/'  => __('resource.settings.content.options.permalink_structure.post_id'),
+                                '/%year%/%monthnum%/%postname%/' => __('resource.settings.content.options.permalink_structure.date_postname'),
                             ])
                             ->default('/%postname%/')
                             ->required()
                             ->native(false),
 
                         Forms\Components\Placeholder::make('permalink_preview')
-                            ->label('Preview')
+                            ->label(__('resource.settings.content.fields.permalink_preview'))
                             ->content(
                                 fn($get) =>
                                 url('') .
-                                    ($get('permalink_structure') === '/%postname%/' ? '/sample-post/' : ($get('permalink_structure') === '/%post_id%/' ? '/123/' :
-                                        '/2025/08/sample-post/'))
+                                    ($get('permalink_structure') === '/%postname%/' ? '/sample-post/' : ($get('permalink_structure') === '/%post_id%/' ? '/123/' : '/2025/08/sample-post/'))
                             )
-                            ->helperText('This is how your post URLs will appear.')
+                            ->helperText(__('resource.settings.content.helpers.permalink_preview'))
                     ]),
             ]);
     }

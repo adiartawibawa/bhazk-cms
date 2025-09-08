@@ -7,6 +7,7 @@ use App\Settings\DeveloperSettings;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Pages\SettingsPage;
+use Illuminate\Contracts\Support\Htmlable;
 
 class ManageDeveloper extends SettingsPage
 {
@@ -16,11 +17,20 @@ class ManageDeveloper extends SettingsPage
 
     protected static ?string $cluster = Settings::class;
 
-    protected static ?string $navigationLabel = 'Developer';
+    public static function getNavigationLabel(): string
+    {
+        return __('resource.settings.developer.navigation.label');
+    }
 
-    protected static ?string $title = 'Manage Developer Settings';
+    public function getTitle(): string|Htmlable
+    {
+        return __('resource.settings.developer.title');
+    }
 
-    protected static ?string $navigationGroup = 'Advanced Settings';
+    public static function getNavigationGroup(): string
+    {
+        return __('resource.settings.developer.navigation.group');
+    }
 
     protected static ?int $navigationSort = 7;
 
@@ -28,34 +38,34 @@ class ManageDeveloper extends SettingsPage
     {
         return $form
             ->schema([
-                Forms\Components\Section::make('System Settings')
-                    ->description('Configure system behavior and error handling')
+                Forms\Components\Section::make(__('resource.settings.developer.sections.system.label'))
+                    ->description(__('resource.settings.developer.sections.system.description'))
                     ->icon('heroicon-o-cog')
                     ->collapsible()
                     ->schema([
                         Forms\Components\Grid::make()
                             ->schema([
                                 Forms\Components\Toggle::make('debug_mode')
-                                    ->label('Enable Debug Mode')
-                                    ->helperText('When enabled, the application will display detailed error messages (recommended for development only).')
+                                    ->label(__('resource.settings.developer.fields.debug_mode'))
+                                    ->helperText(__('resource.settings.developer.helpers.debug_mode'))
                                     ->default(config('app.debug'))
                                     ->onColor('warning')
                                     ->offColor('success')
                                     ->inline(false)
-                                    ->reactive(), // Tambahkan reactive() agar perubahan langsung terlihat
+                                    ->reactive(),
 
                                 Forms\Components\Toggle::make('maintenance_mode')
-                                    ->label('Maintenance Mode')
-                                    ->helperText('When enabled, all users will be redirected to the maintenance page.')
+                                    ->label(__('resource.settings.developer.fields.maintenance_mode'))
+                                    ->helperText(__('resource.settings.developer.helpers.maintenance_mode'))
                                     ->default(false)
                                     ->onColor('danger')
                                     ->offColor('success')
                                     ->inline(false)
-                                    ->reactive(), // Tambahkan reactive() agar perubahan langsung terlihat
+                                    ->reactive(),
 
                                 Forms\Components\Toggle::make('error_logging')
-                                    ->label('Enable Error Logging')
-                                    ->helperText('When enabled, all errors will be logged to the Laravel log files.')
+                                    ->label(__('resource.settings.developer.fields.error_logging'))
+                                    ->helperText(__('resource.settings.developer.helpers.error_logging'))
                                     ->default(true)
                                     ->onColor('success')
                                     ->offColor('danger')
@@ -64,17 +74,17 @@ class ManageDeveloper extends SettingsPage
                             ->columns(1),
                     ]),
 
-                Forms\Components\Section::make('Debug Information')
-                    ->description('Current system status and recommendations')
+                Forms\Components\Section::make(__('resource.settings.developer.sections.debug_info.label'))
+                    ->description(__('resource.settings.developer.sections.debug_info.description'))
                     ->icon('heroicon-o-information-circle')
                     ->collapsible()
                     ->schema([
                         Forms\Components\Placeholder::make('debug_status')
-                            ->label('Debug Mode Status')
+                            ->label(__('resource.settings.developer.fields.debug_status'))
                             ->content(function ($get) {
                                 return $get('debug_mode') ?
-                                    '⚠️ Debug mode is ENABLED - Not recommended for production' :
-                                    '✅ Debug mode is disabled - Recommended for production';
+                                    __('resource.settings.developer.status_messages.debug_enabled') :
+                                    __('resource.settings.developer.status_messages.debug_disabled');
                             })
                             ->extraAttributes(function ($get) {
                                 return [
@@ -85,11 +95,11 @@ class ManageDeveloper extends SettingsPage
                             }),
 
                         Forms\Components\Placeholder::make('maintenance_status')
-                            ->label('Maintenance Mode Status')
+                            ->label(__('resource.settings.developer.fields.maintenance_status'))
                             ->content(function ($get) {
                                 return $get('maintenance_mode') ?
-                                    '🔧 Maintenance mode is ENABLED - Users will see maintenance page' :
-                                    '✅ Maintenance mode is disabled - Site is accessible to all users';
+                                    __('resource.settings.developer.status_messages.maintenance_enabled') :
+                                    __('resource.settings.developer.status_messages.maintenance_disabled');
                             })
                             ->extraAttributes(function ($get) {
                                 return [

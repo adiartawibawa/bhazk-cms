@@ -9,6 +9,7 @@ use Filament\Forms\Form;
 use Filament\Pages\SettingsPage;
 use Illuminate\Support\Facades\Date;
 use DateTimeZone;
+use Illuminate\Contracts\Support\Htmlable;
 
 class ManageGeneral extends SettingsPage
 {
@@ -18,11 +19,20 @@ class ManageGeneral extends SettingsPage
 
     protected static ?string $cluster = Settings::class;
 
-    protected static ?string $navigationLabel = 'General';
+    public static function getNavigationLabel(): string
+    {
+        return __('resource.settings.general.navigation.label');
+    }
 
-    protected static ?string $title = 'Manage General Settings';
+    public function getTitle(): string|Htmlable
+    {
+        return __('resource.settings.general.title');
+    }
 
-    protected static ?string $navigationGroup = 'Site Configuration';
+    public static function getNavigationGroup(): string
+    {
+        return __('resource.settings.general.navigation.group');
+    }
 
     protected static ?int $navigationSort = 1;
 
@@ -30,21 +40,21 @@ class ManageGeneral extends SettingsPage
     {
         return $form
             ->schema([
-                Forms\Components\Section::make('General Settings')
-                    ->description('Configure basic site information and global settings')
+                Forms\Components\Section::make(__('resource.settings.general.sections.general.label'))
+                    ->description(__('resource.settings.general.sections.general.description'))
                     ->icon('heroicon-o-globe-alt')
                     ->collapsible()
                     ->schema([
                         Forms\Components\Grid::make(2)
                             ->schema([
                                 Forms\Components\TextInput::make('site_name')
-                                    ->label('Site Name')
+                                    ->label(__('resource.settings.general.fields.site_name'))
                                     ->required()
                                     ->maxLength(255)
                                     ->columnSpan(1),
 
                                 Forms\Components\TextInput::make('admin_email')
-                                    ->label('Admin Email')
+                                    ->label(__('resource.settings.general.fields.admin_email'))
                                     ->email()
                                     ->required()
                                     ->maxLength(255)
@@ -54,7 +64,7 @@ class ManageGeneral extends SettingsPage
                         Forms\Components\Grid::make(2)
                             ->schema([
                                 Forms\Components\TextInput::make('site_url')
-                                    ->label('Site URL')
+                                    ->label(__('resource.settings.general.fields.site_url'))
                                     ->url()
                                     ->required()
                                     ->maxLength(255)
@@ -62,25 +72,25 @@ class ManageGeneral extends SettingsPage
                                     ->columnSpan(1),
 
                                 Forms\Components\TextInput::make('admin_url')
-                                    ->label('Admin URL')
+                                    ->label(__('resource.settings.general.fields.admin_url'))
                                     ->url()
                                     ->required()
                                     ->maxLength(255)
                                     ->prefixIcon('heroicon-o-lock-closed')
-                                    ->helperText('URL untuk akses dashboard admin.')
+                                    ->helperText(__('resource.settings.general.placeholders.admin_url'))
                                     ->columnSpan(1),
                             ]),
                     ]),
 
-                Forms\Components\Section::make('Date & Time Settings')
-                    ->description('Configure how dates and times are displayed throughout the site')
+                Forms\Components\Section::make(__('resource.settings.general.sections.datetime.label'))
+                    ->description(__('resource.settings.general.sections.datetime.description'))
                     ->icon('heroicon-o-clock')
                     ->collapsible()
                     ->schema([
                         Forms\Components\Grid::make(3)
                             ->schema([
                                 Forms\Components\Select::make('date_format')
-                                    ->label('Date Format')
+                                    ->label(__('resource.settings.general.fields.date_format'))
                                     ->options([
                                         'd F Y'   => now()->format('d F Y') . ' (d F Y)',
                                         'd/m/Y'   => now()->format('d/m/Y') . ' (d/m/Y)',
@@ -91,7 +101,7 @@ class ManageGeneral extends SettingsPage
                                     ->columnSpan(1),
 
                                 Forms\Components\Select::make('time_format')
-                                    ->label('Time Format')
+                                    ->label(__('resource.settings.general.fields.time_format'))
                                     ->options([
                                         'H:i'    => now()->format('H:i') . ' (24h)',
                                         'h:i A'  => now()->format('h:i A') . ' (12h AM/PM)',
@@ -100,7 +110,7 @@ class ManageGeneral extends SettingsPage
                                     ->columnSpan(1),
 
                                 Forms\Components\Select::make('timezone')
-                                    ->label('Timezone')
+                                    ->label(__('resource.settings.general.fields.timezone'))
                                     ->options(collect(DateTimeZone::listIdentifiers())
                                         ->mapWithKeys(fn($tz) => [$tz => $tz]))
                                     ->searchable()
@@ -109,7 +119,7 @@ class ManageGeneral extends SettingsPage
                             ]),
 
                         Forms\Components\Placeholder::make('datetime_preview')
-                            ->label('Current Preview')
+                            ->label(__('resource.settings.general.fields.datetime_preview'))
                             ->content(function ($get) {
                                 $dateFormat = $get('date_format') ?? 'd F Y';
                                 $timeFormat = $get('time_format') ?? 'H:i';

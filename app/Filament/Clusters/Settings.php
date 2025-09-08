@@ -8,11 +8,17 @@ class Settings extends Cluster
 {
     protected static ?string $navigationIcon = 'heroicon-o-adjustments-horizontal';
 
-    protected static ?string $navigationLabel = 'Settings';
+    public static function getNavigationLabel(): string
+    {
+        return __('resource.settings.navigation.label');
+    }
 
     protected static ?string $slug = 'settings';
 
-    protected static ?string $navigationGroup = 'System';
+    public static function getNavigationGroup(): ?string
+    {
+        return __('resource.settings.navigation.group');
+    }
 
     protected static ?int $navigationSort = 5;
 }

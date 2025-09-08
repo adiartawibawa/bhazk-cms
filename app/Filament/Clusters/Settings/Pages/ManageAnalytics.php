@@ -7,6 +7,7 @@ use App\Settings\AnalyticsSettings;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Pages\SettingsPage;
+use Illuminate\Contracts\Support\Htmlable;
 
 class ManageAnalytics extends SettingsPage
 {
@@ -16,11 +17,20 @@ class ManageAnalytics extends SettingsPage
 
     protected static ?string $cluster = Settings::class;
 
-    protected static ?string $navigationLabel = 'Analytics';
+    public static function getNavigationLabel(): string
+    {
+        return __('resource.settings.analytics.navigation.label');
+    }
 
-    protected static ?string $title = 'Manage Analytics Settings';
+    public function getTitle(): string|Htmlable
+    {
+        return __('resource.settings.analytics.title');
+    }
 
-    protected static ?string $navigationGroup = 'Analytics & Tracking';
+    public static function getNavigationGroup(): string
+    {
+        return __('resource.settings.analytics.navigation.group');
+    }
 
     protected static ?int $navigationSort = 2;
 
@@ -29,36 +39,38 @@ class ManageAnalytics extends SettingsPage
         return $form
             ->schema([
                 // General Tracking IDs
-                Forms\Components\Section::make('General Tracking')
-                    ->description('Configure Google Analytics, Tag Manager, and Facebook Pixel tracking codes.')
+                Forms\Components\Section::make(__('resource.settings.analytics.sections.general_tracking.label'))
+                    ->description(__('resource.settings.analytics.sections.general_tracking.description'))
                     ->icon('heroicon-o-chart-bar')
                     ->collapsible()
                     ->schema([
                         Forms\Components\TextInput::make('google_analytics_id')
-                            ->label('Google Analytics ID')
-                            ->placeholder('UA-XXXXXXXXX-X')
-                            ->maxLength(50)->prefixIcon('heroicon-o-magnifying-glass-circle'),
+                            ->label(__('resource.settings.analytics.fields.google_analytics_id'))
+                            ->placeholder(__('resource.settings.analytics.placeholders.google_analytics_id'))
+                            ->maxLength(50)
+                            ->prefixIcon('heroicon-o-magnifying-glass-circle'),
 
                         Forms\Components\TextInput::make('google_tag_manager_id')
-                            ->label('Google Tag Manager ID')
-                            ->placeholder('GTM-XXXXXXX')
-                            ->maxLength(50)->prefixIcon('heroicon-o-tag'),
+                            ->label(__('resource.settings.analytics.fields.google_tag_manager_id'))
+                            ->placeholder(__('resource.settings.analytics.placeholders.google_tag_manager_id'))
+                            ->maxLength(50)
+                            ->prefixIcon('heroicon-o-tag'),
 
                         Forms\Components\TextInput::make('facebook_pixel_id')
-                            ->label('Facebook Pixel ID')
-                            ->placeholder('123456789012345')
+                            ->label(__('resource.settings.analytics.fields.facebook_pixel_id'))
+                            ->placeholder(__('resource.settings.analytics.placeholders.facebook_pixel_id'))
                             ->maxLength(50),
                     ]),
 
                 // Social Login
-                Forms\Components\Section::make('Social Login')
-                    ->description('Enable or disable social media authentication options.')
+                Forms\Components\Section::make(__('resource.settings.analytics.sections.social_login.label'))
+                    ->description(__('resource.settings.analytics.sections.social_login.description'))
                     ->icon('heroicon-o-user-group')
                     ->collapsible()
                     ->schema([
                         Forms\Components\Toggle::make('social_login_enabled')
-                            ->label('Enable Social Login')
-                            ->helperText('When enabled, users can log in using their social media accounts.')
+                            ->label(__('resource.settings.analytics.fields.social_login_enabled'))
+                            ->helperText(__('resource.settings.analytics.helpers.social_login_enabled'))
                             ->default(false)
                             ->onColor('success')
                             ->offColor('danger')
@@ -66,44 +78,42 @@ class ManageAnalytics extends SettingsPage
                     ]),
 
                 // Google Analytics API Config
-                Forms\Components\Section::make('Google Analytics API Configuration')
-                    ->description('Settings for Google Analytics API v4 integration.')
+                Forms\Components\Section::make(__('resource.settings.analytics.sections.google_api.label'))
+                    ->description(__('resource.settings.analytics.sections.google_api.description'))
                     ->icon('heroicon-o-cog')
                     ->collapsible()
                     ->schema([
                         Forms\Components\TextInput::make('google_analytics_property_id')
-                            ->label('Google Analytics Property ID')
-                            ->placeholder('properties/123456789')
+                            ->label(__('resource.settings.analytics.fields.google_analytics_property_id'))
+                            ->placeholder(__('resource.settings.analytics.placeholders.google_analytics_property_id'))
                             ->maxLength(100),
 
                         Forms\Components\TextInput::make('google_analytics_credentials_path')
-                            ->label('Credentials JSON Path')
-                            ->placeholder('storage/app/analytics/credentials.json')
-                            ->helperText('Path to the JSON credentials file on the server.'),
+                            ->label(__('resource.settings.analytics.fields.google_analytics_credentials_path'))
+                            ->placeholder(__('resource.settings.analytics.placeholders.google_analytics_credentials_path'))
+                            ->helperText(__('resource.settings.analytics.helpers.google_analytics_credentials_path')),
 
                         Forms\Components\KeyValue::make('google_analytics_credentials')
-                            ->label('Google Analytics Credentials (JSON)')
-                            ->keyLabel('Key')
-                            ->valueLabel('Value')
+                            ->label(__('resource.settings.analytics.fields.google_analytics_credentials'))
+                            ->keyLabel(__('resource.settings.analytics.fields.key'))
+                            ->valueLabel(__('resource.settings.analytics.fields.value'))
                             ->reorderable()
-                            ->addButtonLabel('Add Credential')
-                            ->helperText('Enter credentials manually if not using a credentials file.'),
+                            ->addButtonLabel(__('resource.settings.analytics.fields.add_credential'))
+                            ->helperText(__('resource.settings.analytics.helpers.google_analytics_credentials')),
 
-                        Forms\Components\Fieldset::make('Cache Duration')
+                        Forms\Components\Fieldset::make(__('resource.settings.analytics.fields.google_analytics_cache_duration'))
                             ->schema([
                                 Forms\Components\TextInput::make('google_analytics_cache_duration.minutes')
-                                    ->label('Cache Duration (minutes)')
+                                    ->label(__('resource.settings.analytics.fields.google_analytics_cache_duration'))
                                     ->numeric()
                                     ->minValue(1)
                                     ->default(60)
                                     ->required()
-                                    ->suffix('minutes')
-                                    ->helperText('How long to cache analytics data before refreshing.'),
+                                    ->suffix(__('resource.settings.analytics.fields.minutes'))
+                                    ->helperText(__('resource.settings.analytics.helpers.google_analytics_cache_duration')),
                             ])
                             ->columns(1),
                     ]),
-
-
             ]);
     }
 }

@@ -10,6 +10,7 @@ use Filament\Pages\SettingsPage;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Tabs;
 use Filament\Forms\Components\ViewField;
+use Illuminate\Contracts\Support\Htmlable;
 
 class ManageAppearance extends SettingsPage
 {
@@ -19,11 +20,20 @@ class ManageAppearance extends SettingsPage
 
     protected static ?string $cluster = Settings::class;
 
-    protected static ?string $navigationLabel = 'Appearance';
+    public static function getNavigationLabel(): string
+    {
+        return __('resource.settings.appearance.navigation.label');
+    }
 
-    protected static ?string $title = 'Manage Appearance Settings';
+    public function getTitle(): string|Htmlable
+    {
+        return __('resource.settings.appearance.title');
+    }
 
-    protected static ?string $navigationGroup = 'Site Configuration';
+    public static function getNavigationGroup(): string
+    {
+        return __('resource.settings.appearance.navigation.group');
+    }
 
     protected static ?int $navigationSort = 3;
 
@@ -33,69 +43,70 @@ class ManageAppearance extends SettingsPage
             ->schema([
                 Tabs::make('AppearanceTabs')
                     ->tabs([
-                        Tabs\Tab::make('Theme Selection')
+                        Tabs\Tab::make(__('resource.settings.appearance.tabs.theme.label'))
                             ->icon('heroicon-o-swatch')
                             ->schema([
-                                Section::make('Theme Configuration')
-                                    ->description('Select and customize the visual theme for your application')
+                                Section::make(__('resource.settings.appearance.sections.theme.label'))
+                                    ->description(__('resource.settings.appearance.sections.theme.description'))
                                     ->schema([
                                         Forms\Components\Select::make('active_theme')
-                                            ->label('Active Theme')
+                                            ->label(__('resource.settings.appearance.fields.active_theme'))
                                             ->options([
-                                                'default' => 'Default Theme',
-                                                'dark'    => 'Dark Theme',
-                                                'light'   => 'Light Theme',
-                                                'custom'  => 'Custom Theme',
+                                                'default' => __('resource.settings.appearance.options.themes.default'),
+                                                'dark'    => __('resource.settings.appearance.options.themes.dark'),
+                                                'light'   => __('resource.settings.appearance.options.themes.light'),
+                                                'custom'  => __('resource.settings.appearance.options.themes.custom'),
                                             ])
                                             ->required()
                                             ->default('default')
                                             ->reactive()
-                                            ->helperText('Choose the main theme that will be used throughout the application.'),
+                                            ->helperText(__('resource.settings.appearance.helpers.active_theme')),
 
                                         Forms\Components\Grid::make(2)
                                             ->schema([
                                                 Forms\Components\ColorPicker::make('primary_color')
-                                                    ->label('Primary Color')
+                                                    ->label(__('resource.settings.appearance.fields.primary_color'))
                                                     ->default('#3b82f6')
-                                                    ->helperText('Main brand color used for buttons and links.'),
+                                                    ->helperText(__('resource.settings.appearance.helpers.primary_color')),
 
                                                 Forms\Components\ColorPicker::make('secondary_color')
-                                                    ->label('Secondary Color')
+                                                    ->label(__('resource.settings.appearance.fields.secondary_color'))
                                                     ->default('#64748b')
-                                                    ->helperText('Secondary color used for accents and highlights.'),
+                                                    ->helperText(__('resource.settings.appearance.helpers.secondary_color')),
                                             ])
                                             ->visible(fn($get) => $get('active_theme') === 'custom'),
                                     ]),
                             ]),
 
-                        Tabs\Tab::make('Custom Code')
+                        Tabs\Tab::make(__('resource.settings.appearance.tabs.custom_code.label'))
                             ->icon('heroicon-o-code-bracket')
                             ->schema([
-                                Section::make('Custom Styling')
-                                    ->description('Add your own CSS and JavaScript to customize the appearance')
+                                Section::make(__('resource.settings.appearance.sections.custom_code.label'))
+                                    ->description(__('resource.settings.appearance.sections.custom_code.description'))
                                     ->schema([
                                         Forms\Components\Textarea::make('custom_css')
-                                            ->label('Custom CSS')
+                                            ->label(__('resource.settings.appearance.fields.custom_css'))
                                             ->rows(10)
-                                            ->helperText('Add custom CSS that will be loaded throughout the application.')
-                                            ->placeholder('/* Add your custom styles here */')
+                                            ->helperText(__('resource.settings.appearance.helpers.custom_css'))
+                                            ->placeholder(__('resource.settings.appearance.placeholders.custom_css'))
                                             ->extraInputAttributes(['style' => 'font-family: monospace;']),
 
                                         Forms\Components\Textarea::make('custom_js')
-                                            ->label('Custom JavaScript')
+                                            ->label(__('resource.settings.appearance.fields.custom_js'))
                                             ->rows(10)
-                                            ->helperText('Add custom JavaScript that will run throughout the application.')
-                                            ->placeholder('// Add your custom scripts here')
+                                            ->helperText(__('resource.settings.appearance.helpers.custom_js'))
+                                            ->placeholder(__('resource.settings.appearance.placeholders.custom_js'))
                                             ->extraInputAttributes(['style' => 'font-family: monospace;']),
                                     ]),
                             ]),
 
-                        Tabs\Tab::make('Preview')
+                        Tabs\Tab::make(__('resource.settings.appearance.tabs.preview.label'))
                             ->icon('heroicon-o-eye')
                             ->schema([
-                                Section::make('Theme Preview')
-                                    ->description('See how your theme will look with the current settings')
+                                Section::make(__('resource.settings.appearance.sections.preview.label'))
+                                    ->description(__('resource.settings.appearance.sections.preview.description'))
                                     ->schema([
+                                        // Placeholder untuk theme preview jika dibutuhkan
                                         // ViewField::make('theme_preview')
                                         //     ->view('filament.settings.theme-preview')
                                         //     ->label('')

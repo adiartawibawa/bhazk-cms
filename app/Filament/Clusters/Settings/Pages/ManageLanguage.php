@@ -7,6 +7,7 @@ use App\Settings\LanguageSettings;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Pages\SettingsPage;
+use Illuminate\Contracts\Support\Htmlable;
 
 class ManageLanguage extends SettingsPage
 {
@@ -16,11 +17,20 @@ class ManageLanguage extends SettingsPage
 
     protected static ?string $cluster = Settings::class;
 
-    protected static ?string $navigationLabel = 'Language';
+    public static function getNavigationLabel(): string
+    {
+        return __('resource.settings.language.navigation.label');
+    }
 
-    protected static ?string $title = 'Manage Language Settings';
+    public function getTitle(): string|Htmlable
+    {
+        return __('resource.settings.language.title');
+    }
 
-    protected static ?string $navigationGroup = 'Site Configuration';
+    public static function getNavigationGroup(): string
+    {
+        return __('resource.settings.language.navigation.group');
+    }
 
     protected static ?int $navigationSort = 4;
 
@@ -28,34 +38,34 @@ class ManageLanguage extends SettingsPage
     {
         return $form
             ->schema([
-                Forms\Components\Section::make('Language Settings')
-                    ->description('Configure the language preferences for your application')
+                Forms\Components\Section::make(__('resource.settings.language.sections.language.label'))
+                    ->description(__('resource.settings.language.sections.language.description'))
                     ->icon('heroicon-o-language')
                     ->collapsible()
                     ->schema([
                         Forms\Components\Select::make('default_language')
-                            ->label('Default Language')
+                            ->label(__('resource.settings.language.fields.default_language'))
                             ->options([
-                                'id' => 'Indonesian',
-                                'en' => 'English',
+                                'id' => __('resource.settings.language.options.languages.id'),
+                                'en' => __('resource.settings.language.options.languages.en'),
                             ])
                             ->required()
                             ->default('id')
                             ->searchable(),
 
                         Forms\Components\CheckboxList::make('supported_languages')
-                            ->label('Supported Languages')
+                            ->label(__('resource.settings.language.fields.supported_languages'))
                             ->options([
-                                'id' => 'Indonesian',
-                                'en' => 'English',
+                                'id' => __('resource.settings.language.options.languages.id'),
+                                'en' => __('resource.settings.language.options.languages.en'),
                             ])
                             ->columns(2)
                             ->default(['id', 'en'])
                             ->required(),
 
                         Forms\Components\Toggle::make('auto_detect_language')
-                            ->label('Auto Detect Language')
-                            ->helperText('Jika aktif, bahasa user akan dipilih berdasarkan browser/locale mereka.')
+                            ->label(__('resource.settings.language.fields.auto_detect_language'))
+                            ->helperText(__('resource.settings.language.helpers.auto_detect_language'))
                             ->default(true),
                     ]),
             ]);

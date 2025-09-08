@@ -9,6 +9,7 @@ use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Tabs;
 use Filament\Forms\Form;
 use Filament\Pages\SettingsPage;
+use Illuminate\Contracts\Support\Htmlable;
 
 class ManageSeo extends SettingsPage
 {
@@ -18,11 +19,21 @@ class ManageSeo extends SettingsPage
 
     protected static ?string $cluster = Settings::class;
 
-    protected static ?string $navigationLabel = 'Search Optimization';
+    public static function getNavigationLabel(): string
+    {
+        return __('resource.settings.seo.navigation.label');
+    }
 
-    protected static ?string $title = 'Manage SEO Settings';
+    public function getTitle(): string|Htmlable
+    {
+        return __('resource.settings.seo.title');
+    }
 
-    protected static ?string $navigationGroup = 'Site Configuration';
+    // Grup navigasi multi-bahasa
+    public static function getNavigationGroup(): string
+    {
+        return __('resource.settings.seo.navigation.group');
+    }
 
     protected static ?int $navigationSort = 5;
 
@@ -34,67 +45,67 @@ class ManageSeo extends SettingsPage
                     ->tabs([
 
                         // META SETTINGS
-                        Tabs\Tab::make('Meta')
+                        Tabs\Tab::make(__('resource.settings.seo.tabs.meta.label'))
                             ->icon('heroicon-o-document-text')
                             ->schema([
-                                Section::make('Meta Information')
-                                    ->description('General SEO meta tags for your website')
+                                Section::make(__('resource.settings.seo.sections.meta.label'))
+                                    ->description(__('resource.settings.seo.sections.meta.description'))
                                     ->schema([
                                         Forms\Components\TextInput::make('meta_title')
-                                            ->label('Meta Title')
+                                            ->label(__('resource.settings.seo.fields.meta_title'))
                                             ->required()
                                             ->maxLength(60)
-                                            ->helperText('Optimal length: 50–60 characters.'),
+                                            ->helperText(__('resource.settings.seo.helpers.meta_title')),
 
                                         Forms\Components\Textarea::make('meta_description')
-                                            ->label('Meta Description')
+                                            ->label(__('resource.settings.seo.fields.meta_description'))
                                             ->rows(4)
                                             ->maxLength(160)
-                                            ->helperText('Optimal length: 150–160 characters.'),
+                                            ->helperText(__('resource.settings.seo.helpers.meta_description')),
 
                                         Forms\Components\TextInput::make('meta_keywords')
-                                            ->label('Meta Keywords')
-                                            ->placeholder('cms, content management, website')
-                                            ->helperText('Separate keywords with commas.'),
+                                            ->label(__('resource.settings.seo.fields.meta_keywords'))
+                                            ->placeholder(__('resource.settings.seo.placeholders.meta_keywords'))
+                                            ->helperText(__('resource.settings.seo.helpers.meta_keywords')),
                                     ]),
                             ]),
 
                         // SITE IDENTITY
-                        Tabs\Tab::make('Site Identity')
+                        Tabs\Tab::make(__('resource.settings.seo.tabs.identity.label'))
                             ->icon('heroicon-o-photo')
                             ->schema([
-                                Section::make('Branding')
-                                    ->description('Logo and favicon for SEO and sharing')
+                                Section::make(__('resource.settings.seo.sections.branding.label'))
+                                    ->description(__('resource.settings.seo.sections.branding.description'))
                                     ->schema([
                                         Forms\Components\FileUpload::make('site_logo')
-                                            ->label('Site Logo')
+                                            ->label(__('resource.settings.seo.fields.site_logo'))
                                             ->image()
                                             ->directory('seo')
                                             ->imageEditor()
-                                            ->helperText('Recommended: SVG or PNG, transparent background.'),
+                                            ->helperText(__('resource.settings.seo.helpers.site_logo')),
 
                                         Forms\Components\FileUpload::make('site_favicon')
-                                            ->label('Favicon')
+                                            ->label(__('resource.settings.seo.fields.site_favicon'))
                                             ->image()
                                             ->directory('seo')
                                             ->imageEditor()
                                             ->acceptedFileTypes(['image/vnd.microsoft.icon'])
-                                            ->helperText('Recommended: 32x32 or 64x64 ICO/PNG.'),
+                                            ->helperText(__('resource.settings.seo.helpers.site_favicon')),
                                     ]),
                             ]),
 
                         // ROBOTS.TXT
-                        Tabs\Tab::make('Robots')
+                        Tabs\Tab::make(__('resource.settings.seo.tabs.robots.label'))
                             ->icon('heroicon-o-cpu-chip')
                             ->schema([
-                                Section::make('Robots.txt Configuration')
-                                    ->description('Control how search engines crawl your site')
+                                Section::make(__('resource.settings.seo.sections.robots_config.label'))
+                                    ->description(__('resource.settings.seo.sections.robots_config.description'))
                                     ->schema([
                                         Forms\Components\Textarea::make('robots_txt')
-                                            ->label('robots.txt')
+                                            ->label(__('resource.settings.seo.fields.robots_txt'))
                                             ->rows(10)
                                             ->extraInputAttributes(['style' => 'font-family: monospace;'])
-                                            ->helperText('Define rules for search engine crawlers.'),
+                                            ->helperText(__('resource.settings.seo.helpers.robots_txt')),
                                     ]),
                             ]),
                     ])
