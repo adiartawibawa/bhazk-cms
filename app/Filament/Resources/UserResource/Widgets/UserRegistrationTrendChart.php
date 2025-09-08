@@ -10,20 +10,18 @@ use Flowframe\Trend\TrendValue;
 
 class UserRegistrationTrendChart extends ChartWidget
 {
-    protected static ?string $heading = 'User Registration Trend';
+    protected static ?string $heading = 'User Registration Trends';
+
     protected static ?string $maxHeight = '300px';
 
-    /**
-     * Default filter (last 30 days).
-     */
     public ?string $filter = '30d';
 
     protected function getFilters(): ?array
     {
         return [
-            '7d' => 'Last 7 Days',
-            '30d' => 'Last 30 Days',
-            '90d' => 'Last 90 Days',
+            '7d'  => __('resource.user.widgets.user_registration_trend.filters.7d'),
+            '30d' => __('resource.user.widgets.user_registration_trend.filters.30d'),
+            '90d' => __('resource.user.widgets.user_registration_trend.filters.90d'),
         ];
     }
 
@@ -46,16 +44,18 @@ class UserRegistrationTrendChart extends ChartWidget
         return [
             'datasets' => [
                 [
-                    'label' => 'New Registrations',
+                    'label' => __('resource.user.widgets.user_registration_trend.dataset.label'),
                     'data' => $trend->map(fn(TrendValue $value) => $value->aggregate),
-                    'backgroundColor' => 'rgba(59, 130, 246, 0.2)', // soft blue fill
-                    'borderColor' => 'rgb(59, 130, 246)',           // blue line
-                    'borderWidth' => 2,
-                    'fill' => true,
-                    'tension' => 0.4, // smooth line
+                    'backgroundColor' => 'rgba(59, 130, 246, 0.2)',
+                    'borderColor'     => 'rgb(59, 130, 246)',
+                    'borderWidth'     => 2,
+                    'fill'            => true,
+                    'tension'         => 0.4,
                 ],
             ],
-            'labels' => $trend->map(fn(TrendValue $value) => Carbon::parse($value->date)->format('d M')),
+            'labels' => $trend->map(
+                fn(TrendValue $value) => Carbon::parse($value->date)->format('d M')
+            ),
         ];
     }
 
@@ -72,15 +72,15 @@ class UserRegistrationTrendChart extends ChartWidget
                     'display' => false,
                 ],
                 'tooltip' => [
-                    'mode' => 'index',
-                    'intersect' => false,
+                    'mode'       => 'index',
+                    'intersect'  => false,
                 ],
             ],
             'scales' => [
                 'y' => [
                     'beginAtZero' => true,
                     'ticks' => [
-                        'precision' => 0, // angka bulat
+                        'precision' => 0,
                     ],
                 ],
                 'x' => [

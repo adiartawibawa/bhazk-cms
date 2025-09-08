@@ -24,7 +24,7 @@ class ViewUser extends ViewRecord
     {
         return $infolist
             ->schema([
-                Components\Section::make('Profile')
+                Components\Section::make(__('resource.user.view.sections.profile'))
                     ->schema([
                         SpatieMediaLibraryImageEntry::make('avatar')
                             ->collection('avatars')
@@ -33,56 +33,56 @@ class ViewUser extends ViewRecord
                             ->label(''),
 
                         Components\TextEntry::make('full_name')
-                            ->label('Full Name')
+                            ->label(__('resource.user.view.fields.full_name'))
                             ->getStateUsing(fn($record) => $record->getFilamentName()),
 
                         Components\TextEntry::make('username')
-                            ->label('Username'),
+                            ->label(__('resource.user.view.fields.username')),
 
                         Components\TextEntry::make('email')
-                            ->label('Email'),
+                            ->label(__('resource.user.view.fields.email')),
                     ])
                     ->columns(2),
 
-                Components\Section::make('Account Status')
+                Components\Section::make(__('resource.user.view.sections.status'))
                     ->schema([
                         Components\IconEntry::make('is_active')
                             ->boolean()
-                            ->label('Is Active'),
+                            ->label(__('resource.user.view.fields.is_active')),
 
                         Components\TextEntry::make('last_login_ip')
                             ->badge()
                             ->color('gray')
-                            ->label('Last Login IP')
-                            ->placeholder('Never logged in'),
+                            ->label(__('resource.user.view.fields.last_login_ip'))
+                            ->placeholder(__('resource.user.view.placeholders.never_logged_in')),
 
                         Components\TextEntry::make('last_login_at')
                             ->dateTime('d M Y H:i')
-                            ->label('Last Login')
-                            ->placeholder('Never logged in'),
+                            ->label(__('resource.user.view.fields.last_login_at'))
+                            ->placeholder(__('resource.user.view.placeholders.never_logged_in')),
                     ])
                     ->columns(3),
 
-                Components\Section::make('System Information')
+                Components\Section::make(__('resource.user.view.sections.system'))
                     ->schema([
                         Components\TextEntry::make('timezone')
-                            ->label('Timezone'),
+                            ->label(__('resource.user.view.fields.timezone')),
 
                         Components\TextEntry::make('created_at')
                             ->dateTime('d M Y H:i')
-                            ->label('Created At'),
+                            ->label(__('resource.user.view.fields.created_at')),
 
                         Components\TextEntry::make('updated_at')
                             ->dateTime('d M Y H:i')
-                            ->label('Updated At'),
+                            ->label(__('resource.user.view.fields.updated_at')),
 
                         Components\TextEntry::make('creator.username')
-                            ->label('Created By')
-                            ->placeholder('-'),
+                            ->label(__('resource.user.view.fields.created_by'))
+                            ->placeholder(__('resource.user.view.placeholders.empty')),
 
                         Components\TextEntry::make('updater.username')
-                            ->label('Updated By')
-                            ->placeholder('-'),
+                            ->label(__('resource.user.view.fields.updated_by'))
+                            ->placeholder(__('resource.user.view.placeholders.empty')),
                     ])
                     ->columns(5),
             ]);

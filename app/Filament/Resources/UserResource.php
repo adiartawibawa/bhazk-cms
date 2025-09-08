@@ -3,7 +3,6 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\UserResource\Pages;
-use App\Filament\Resources\UserResource\RelationManagers;
 use App\Models\Role;
 use App\Models\User;
 use Filament\Forms;
@@ -31,53 +30,61 @@ class UserResource extends Resource
 
     protected static ?int $navigationSort = 1;
 
+    public static function getNavigationGroup(): ?string
+    {
+        return __('resource.user.navigation.group');
+    }
+
+    public static function getPluralLabel(): ?string
+    {
+        return __('resource.user.navigation.label');
+    }
+
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                Section::make('Avatar')
+                Section::make(__('resource.user.sections.avatar'))
                     ->schema([
                         Forms\Components\SpatieMediaLibraryFileUpload::make('avatar')
                             ->collection('avatars')
                             ->avatar()
                             ->image()
                             ->imageEditor()
-                            ->imageEditorAspectRatios([
-                                '1:1',
-                            ])
+                            ->imageEditorAspectRatios(['1:1'])
                             ->circleCropper()
-                            ->maxSize(2048) // 2MB
-                            ->label('Profile Picture')
-                            ->helperText('Upload a profile picture (max 2MB)'),
+                            ->maxSize(2048)
+                            ->label(__('resource.user.fields.avatar.label'))
+                            ->helperText(__('resource.user.fields.avatar.helper')),
                     ])
                     ->collapsible(),
 
-                Section::make('Basic Information')
+                Section::make(__('resource.user.sections.basic'))
                     ->columns(2)
                     ->schema([
                         TextInput::make('username')
                             ->required()
                             ->maxLength(255)
                             ->unique(ignoreRecord: true)
-                            ->label('Username'),
+                            ->label(__('resource.user.fields.username')),
 
                         TextInput::make('email')
                             ->email()
                             ->required()
                             ->maxLength(255)
                             ->unique(ignoreRecord: true)
-                            ->label('Email Address'),
+                            ->label(__('resource.user.fields.email')),
 
                         TextInput::make('first_name')
                             ->maxLength(255)
-                            ->label('First Name'),
+                            ->label(__('resource.user.fields.first_name')),
 
                         TextInput::make('last_name')
                             ->maxLength(255)
-                            ->label('Last Name'),
+                            ->label(__('resource.user.fields.last_name')),
                     ]),
 
-                Section::make('Security & Preferences')
+                Section::make(__('resource.user.sections.security'))
                     ->columns(2)
                     ->schema([
                         TextInput::make('password')
@@ -86,42 +93,39 @@ class UserResource extends Resource
                             ->dehydrated(fn($state) => filled($state))
                             ->required(fn(string $context): bool => $context === 'create')
                             ->maxLength(255)
-                            ->label('Password'),
+                            ->label(__('resource.user.fields.password')),
 
                         Select::make('roles')
-                            ->label('Roles')
+                            ->label(__('resource.user.fields.roles'))
                             ->multiple()
                             ->relationship('roles', 'name', fn($query) => $query->where('name', '!=', 'super_admin'))
                             ->preload()
                             ->searchable()
                             ->createOptionForm([
-                                \Filament\Forms\Components\TextInput::make('name')
-                                    ->label('Role Name')
+                                TextInput::make('name')
+                                    ->label(__('resource.user.fields.role_name'))
                                     ->required()
                                     ->unique(ignoreRecord: true),
                             ])
                             ->createOptionAction(function ($action) {
                                 return $action
-                                    ->modalHeading('Create Role')
-                                    ->modalButton('Create')
-                                    ->modal(); // slideOver()
+                                    ->modalHeading(__('resource.user.actions.create_role.heading'))
+                                    ->modalButton(__('resource.user.actions.create_role.button'))
+                                    ->modal();
                             })
-                            ->default(
-                                fn() => Role::where('name', 'user')->pluck('id')->toArray()
-                            ),
+                            ->default(fn() => Role::where('name', 'user')->pluck('id')->toArray()),
 
                         Select::make('timezone')
                             ->options(array_combine(timezone_identifiers_list(), timezone_identifiers_list()))
                             ->searchable()
                             ->default('UTC')
-                            ->label('Timezone'),
+                            ->label(__('resource.user.fields.timezone')),
 
                         Toggle::make('is_active')
-                            ->label('Active')
+                            ->label(__('resource.user.fields.is_active.label'))
                             ->default(true)
-                            ->helperText('User account is enabled'),
+                            ->helperText(__('resource.user.fields.is_active.helper')),
                     ]),
-
             ]);
     }
 
@@ -133,54 +137,54 @@ class UserResource extends Resource
                     ->collection('avatars')
                     ->circular()
                     ->defaultImageUrl(fn($record) => $record->getFilamentAvatarUrl())
-                    ->label('Avatar'),
+                    ->label(__('resource.user.table.avatar')),
 
                 TextColumn::make('username')
                     ->searchable()
                     ->sortable()
-                    ->label('Username'),
+                    ->label(__('resource.user.table.username')),
 
                 TextColumn::make('email')
                     ->searchable()
                     ->sortable()
-                    ->label('Email'),
+                    ->label(__('resource.user.table.email')),
 
                 TextColumn::make('full_name')
                     ->getStateUsing(fn($record) => "{$record->first_name} {$record->last_name}")
                     ->searchable(['first_name', 'last_name'])
-                    ->label('Full Name'),
+                    ->label(__('resource.user.table.full_name')),
 
                 IconColumn::make('is_active')
                     ->boolean()
-                    ->label('Active')
+                    ->label(__('resource.user.table.is_active'))
                     ->sortable(),
 
                 TextColumn::make('last_login_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true)
-                    ->label('Last Login'),
+                    ->label(__('resource.user.table.last_login')),
 
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true)
-                    ->label('Created'),
+                    ->label(__('resource.user.table.created')),
 
                 TextColumn::make('updated_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true)
-                    ->label('Updated'),
+                    ->label(__('resource.user.table.updated')),
 
-                Tables\Columns\TextColumn::make('creator.username')
-                    ->label('Created By')
+                TextColumn::make('creator.username')
+                    ->label(__('resource.user.table.created_by'))
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->searchable(),
 
-                Tables\Columns\TextColumn::make('updater.username')
-                    ->label('Updated By')
+                TextColumn::make('updater.username')
+                    ->label(__('resource.user.table.updated_by'))
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->searchable(),
@@ -192,14 +196,14 @@ class UserResource extends Resource
                     ->relationship('roles', 'name')
                     ->multiple()
                     ->preload()
-                    ->label('Filter by Role'),
+                    ->label(__('resource.user.filters.role')),
 
                 Tables\Filters\Filter::make('is_active')
-                    ->label('Active Users')
+                    ->label(__('resource.user.filters.active_users'))
                     ->query(fn(Builder $query) => $query->where('is_active', true)),
 
                 Tables\Filters\Filter::make('never_logged_in')
-                    ->label('Never Logged In')
+                    ->label(__('resource.user.filters.never_logged_in'))
                     ->query(fn(Builder $query) => $query->whereNull('last_login_at')),
             ])
             ->actions([
@@ -223,11 +227,7 @@ class UserResource extends Resource
 
     public static function getRelations(): array
     {
-        return [
-            // RelationManagers\ContentsRelationManager::class,
-            // RelationManagers\ContentRevisionsRelationManager::class,
-            // RelationManagers\RolesRelationManager::class,
-        ];
+        return [];
     }
 
     public static function getPages(): array
@@ -243,9 +243,7 @@ class UserResource extends Resource
     public static function getEloquentQuery(): Builder
     {
         return parent::getEloquentQuery()
-            ->withoutGlobalScopes([
-                SoftDeletingScope::class,
-            ]);
+            ->withoutGlobalScopes([SoftDeletingScope::class]);
     }
 
     public static function getGloballySearchableAttributes(): array

@@ -38,9 +38,6 @@ class ListUsers extends ListRecords
     {
         return [
             UserStatsOverview::class,
-            UserRoleChart::class,
-            UserRegistrationTrendChart::class,
-            UserActivityMetrics::class,
         ];
     }
 
@@ -50,17 +47,17 @@ class ListUsers extends ListRecords
     public function getTabs(): array
     {
         $tabs = [
-            'all' => Tab::make('All Users')
+            'all' => Tab::make(__('resource.user.tabs.all'))
                 ->icon('heroicon-o-users'),
 
-            'never_logged_in' => Tab::make('Never Logged In')
+            'never_logged_in' => Tab::make(__('resource.user.tabs.never_logged_in'))
                 ->icon('heroicon-o-clock')
                 ->modifyQueryUsing(fn(Builder $query) => $query->whereNull('last_login_at')),
         ];
 
         // Dynamically generate role-based tabs
         foreach (User::defaultRoles() as $roleKey => $roleName) {
-            $tabs[$roleKey] = Tab::make($roleName)
+            $tabs[$roleKey] = Tab::make(__($roleName)) // <= bisa translate dari DB atau pakai lang jika ada
                 ->icon(self::getRoleIcons()[$roleKey] ?? 'heroicon-o-user')
                 ->modifyQueryUsing(fn(Builder $query) => $query->role($roleKey));
         }
@@ -82,6 +79,9 @@ class ListUsers extends ListRecords
     protected function getFooterWidgets(): array
     {
         return [
+            UserRoleChart::class,
+            UserRegistrationTrendChart::class,
+            UserActivityMetrics::class,
             RecentUsersTable::class,
             RecentLoginActivity::class,
         ];

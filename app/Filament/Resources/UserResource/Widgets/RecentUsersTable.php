@@ -9,30 +9,27 @@ use Filament\Widgets\TableWidget as BaseWidget;
 
 class RecentUsersTable extends BaseWidget
 {
-    protected int | string | array $columnSpan = 'full';
+    protected int|string|array $columnSpan = 'full';
     protected static ?int $sort = 2;
 
-    /**
-     * Mapping role ke warna badge.
-     */
+    public static function getHeading(): ?string
+    {
+        return __('resource.user.widgets.recent_users.heading');
+    }
+
     private const ROLE_COLORS = [
-        User::ROLE_ADMIN => 'danger',
-        User::ROLE_AUTHOR => 'warning',
-        User::ROLE_EDITOR => 'primary',
+        User::ROLE_ADMIN       => 'danger',
+        User::ROLE_AUTHOR      => 'warning',
+        User::ROLE_EDITOR      => 'primary',
         User::ROLE_CONTRIBUTOR => 'success',
-        User::ROLE_SUBSCRIBER => 'purple',
-        User::ROLE_USER => 'gray',
+        User::ROLE_SUBSCRIBER  => 'purple',
+        User::ROLE_USER        => 'gray',
     ];
 
     public function table(Table $table): Table
     {
         return $table
-            ->query(
-                User::query()
-                    ->with(['roles'])
-                    ->latest()
-                    ->take(10) // gunakan take biar konsisten
-            )
+            ->query(User::query()->with(['roles'])->latest()->take(10))
             ->columns([
                 Tables\Columns\SpatieMediaLibraryImageColumn::make('avatar')
                     ->collection('avatars')
@@ -41,38 +38,38 @@ class RecentUsersTable extends BaseWidget
                     ->label(''),
 
                 Tables\Columns\TextColumn::make('username')
-                    ->label('Username')
+                    ->label(__('resource.user.widgets.recent_users.columns.username'))
                     ->searchable()
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('email')
-                    ->label('Email')
+                    ->label(__('resource.user.widgets.recent_users.columns.email'))
                     ->searchable()
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('full_name')
-                    ->label('Full Name')
-                    ->state(fn(User $record) => $record->full_name) // pakai accessor
+                    ->label(__('resource.user.widgets.recent_users.columns.full_name'))
+                    ->state(fn(User $record) => $record->full_name)
                     ->searchable(['first_name', 'last_name']),
 
                 Tables\Columns\BadgeColumn::make('roles.name')
-                    ->label('Role')
+                    ->label(__('resource.user.widgets.recent_users.columns.role'))
                     ->colors(self::ROLE_COLORS)
                     ->sortable(),
 
                 Tables\Columns\IconColumn::make('is_active')
-                    ->label('Active')
+                    ->label(__('resource.user.widgets.recent_users.columns.is_active'))
                     ->boolean()
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('created_at')
-                    ->label('Registered')
+                    ->label(__('resource.user.widgets.recent_users.columns.created_at'))
                     ->dateTime()
                     ->sortable(),
             ])
             ->actions([
                 Tables\Actions\Action::make('view')
-                    ->label('View')
+                    ->label(__('resource.user.widgets.recent_users.actions.view'))
                     ->icon('heroicon-o-eye')
                     ->url(fn(User $record): string => route('filament.backend.resources.users.view', $record)),
             ]);

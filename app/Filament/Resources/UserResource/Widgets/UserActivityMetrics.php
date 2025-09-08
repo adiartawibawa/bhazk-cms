@@ -7,58 +7,44 @@ use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 use Flowframe\Trend\Trend;
 use Flowframe\Trend\TrendValue;
-use Illuminate\Support\Carbon;
-use Illuminate\Support\Collection;
 
 class UserActivityMetrics extends BaseWidget
 {
     protected static ?int $sort = 4;
 
     private const METRICS = [
-        [
-            'title' => 'Today Logins',
-            'description' => 'Users logged in today',
-            'icon' => 'heroicon-o-arrow-right-circle',
+        'today_logins' => [
+            'icon'  => 'heroicon-o-arrow-right-circle',
             'color' => 'success',
             'field' => 'last_login_at',
             'period' => 'today',
         ],
-        [
-            'title' => 'Weekly Logins',
-            'description' => 'Active users this week',
-            'icon' => 'heroicon-o-calendar',
+        'weekly_logins' => [
+            'icon'  => 'heroicon-o-calendar',
             'color' => 'primary',
             'field' => 'last_login_at',
             'period' => 'week',
         ],
-        [
-            'title' => 'Monthly Logins',
-            'description' => 'Active users this month',
-            'icon' => 'heroicon-o-chart-bar',
+        'monthly_logins' => [
+            'icon'  => 'heroicon-o-chart-bar',
             'color' => 'info',
             'field' => 'last_login_at',
             'period' => 'month',
         ],
-        [
-            'title' => 'New Users Today',
-            'description' => 'Registered today',
-            'icon' => 'heroicon-o-user-plus',
+        'new_users_today' => [
+            'icon'  => 'heroicon-o-user-plus',
             'color' => 'warning',
             'field' => 'created_at',
             'period' => 'today',
         ],
-        [
-            'title' => 'New Users This Week',
-            'description' => 'Registered this week',
-            'icon' => 'heroicon-o-user-group',
+        'new_users_week' => [
+            'icon'  => 'heroicon-o-user-group',
             'color' => 'warning',
             'field' => 'created_at',
             'period' => 'week',
         ],
-        [
-            'title' => 'New Users This Month',
-            'description' => 'Registered this month',
-            'icon' => 'heroicon-o-users',
+        'new_users_month' => [
+            'icon'  => 'heroicon-o-users',
             'color' => 'warning',
             'field' => 'created_at',
             'period' => 'month',
@@ -67,21 +53,21 @@ class UserActivityMetrics extends BaseWidget
 
     protected function getStats(): array
     {
-        return collect(self::METRICS)->map(function ($metric) {
+        return collect(self::METRICS)->map(function ($metric, $key) {
             $count = $this->countByPeriod($metric['field'], $metric['period']);
             $chart = $this->trendData($metric['field']);
 
-            return Stat::make($metric['title'], $count)
-                ->description($metric['description'])
+            return Stat::make(
+                __(sprintf('resource.user.widgets.user_activity_metrics.metrics.%s.title', $key)),
+                $count
+            )
+                ->description(__(sprintf('resource.user.widgets.user_activity_metrics.metrics.%s.description', $key)))
                 ->icon($metric['icon'])
                 ->color($metric['color'])
                 ->chart($chart);
         })->toArray();
     }
 
-    /**
-     * Hitung jumlah user berdasarkan field (created_at / last_login_at) dan periode.
-     */
     private function countByPeriod(string $field, string $period): int
     {
         return match ($period) {
@@ -92,9 +78,6 @@ class UserActivityMetrics extends BaseWidget
         };
     }
 
-    /**
-     * Ambil data tren harian untuk 7 hari terakhir (untuk sparkline chart).
-     */
     private function trendData(string $field): array
     {
         return Trend::model(User::class)
