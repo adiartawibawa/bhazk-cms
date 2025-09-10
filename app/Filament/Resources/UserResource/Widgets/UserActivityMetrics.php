@@ -2,7 +2,10 @@
 
 namespace App\Filament\Resources\UserResource\Widgets;
 
+use App\Filament\Resources\UserResource\Pages\ListUsers;
 use App\Models\User;
+use Carbon\Carbon;
+use Filament\Widgets\Concerns\InteractsWithPageTable;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 use Flowframe\Trend\Trend;
@@ -10,7 +13,43 @@ use Flowframe\Trend\TrendValue;
 
 class UserActivityMetrics extends BaseWidget
 {
+    use InteractsWithPageTable;
+
     protected static ?int $sort = 4;
+
+    protected function getTablePage(): string
+    {
+        return ListUsers::class;
+    }
+
+    private function getDateRange(): array
+    {
+        $filters = $this->tableFilters['date_range'] ?? [];
+
+        $start = Carbon::parse($filters['date_range']['start_date'] ?? Carbon::now()->subDays(30));
+        $end = Carbon::parse($filters['date_range']['end_date'] ?? Carbon::now());
+
+        return [$start, $end];
+    }
+
+    private function growthRate(int $current, int $previous): array
+    {
+        if ($previous === 0) {
+            return [
+                'value' => $current > 0 ? 100 : 0,
+                'icon'  => $current > 0 ? 'heroicon-m-arrow-trending-up' : 'heroicon-m-minus',
+                'color' => $current > 0 ? 'success' : 'gray',
+            ];
+        }
+
+        $rate = (($current - $previous) / $previous) * 100;
+
+        return [
+            'value' => round($rate, 1),
+            'icon'  => $rate >= 0 ? 'heroicon-m-arrow-trending-up' : 'heroicon-m-arrow-trending-down',
+            'color' => $rate >= 0 ? 'success' : 'danger',
+        ];
+    }
 
     private const METRICS = [
         'today_logins' => [
@@ -53,41 +92,96 @@ class UserActivityMetrics extends BaseWidget
 
     protected function getStats(): array
     {
-        return collect(self::METRICS)->map(function ($metric, $key) {
-            $count = $this->countByPeriod($metric['field'], $metric['period']);
-            $chart = $this->trendData($metric['field']);
+        $query = $this->getPageTableQuery();
+        [$start, $end] = $this->getDateRange();
 
-            return Stat::make(
-                __(sprintf('resource.user.widgets.user_activity_metrics.metrics.%s.title', $key)),
-                $count
-            )
-                ->description(__(sprintf('resource.user.widgets.user_activity_metrics.metrics.%s.description', $key)))
-                ->icon($metric['icon'])
-                ->color($metric['color'])
-                ->chart($chart);
+        // Hitung periode sebelumnya
+        $days = $start->diffInDays($end);
+        $previousStart = $start->copy()->subDays($days + 1);
+        $previousEnd = $start->copy()->subDay();
+
+        return collect(self::METRICS)->map(function ($metric, $key) use ($query, $start, $end, $previousStart, $previousEnd) {
+            // Current period count
+            $currentCount = $this->countByPeriod($query, $metric['field'], $metric['period'], $start, $end);
+
+            // Previous period count
+            $previousCount = $this->countByPeriod($query, $metric['field'], $metric['period'], $previousStart, $previousEnd);
+
+            // Growth rate
+            $growth = $this->growthRate($currentCount, $previousCount);
+
+            // Trend data
+            $chart = $this->trendData($query, $metric['field'], $start, $end);
+
+            return $this->makeStat(
+                $key,
+                $currentCount,
+                $chart,
+                $metric['icon'],
+                $metric['color'],
+                $growth
+            );
         })->toArray();
     }
 
-    private function countByPeriod(string $field, string $period): int
+    private function countByPeriod($query, string $field, string $period, $start, $end): int
     {
+        $baseQuery = clone $query;
+
+        // Apply date range filter
+        $baseQuery->whereBetween($field, [$start, $end]);
+
         return match ($period) {
-            'today' => User::whereDate($field, today())->count(),
-            'week'  => User::where($field, '>=', now()->subWeek())->count(),
-            'month' => User::where($field, '>=', now()->subMonth())->count(),
-            default => 0,
+            'today' => $baseQuery->whereDate($field, today())->count(),
+            'week'  => $baseQuery->where($field, '>=', now()->subWeek())->count(),
+            'month' => $baseQuery->where($field, '>=', now()->subMonth())->count(),
+            default => $baseQuery->count(),
         };
     }
 
-    private function trendData(string $field): array
+    private function trendData($query, string $field, $start, $end): array
     {
-        return Trend::model(User::class)
-            ->between(
-                start: now()->subDays(6),
-                end: now()
-            )
+        $trendQuery = clone $query;
+        $trendQuery->whereBetween($field, [$start, $end])->reorder();
+
+        return Trend::query($trendQuery)
+            ->between($start, $end)
             ->perDay()
             ->count($field)
             ->map(fn(TrendValue $value) => $value->aggregate)
             ->toArray();
+    }
+
+    private function makeStat(
+        string $key,
+        int $value,
+        ?array $chart,
+        string $icon,
+        string $color,
+        ?array $growth = null
+    ): Stat {
+        $label = __('resource.user.widgets.user_activity_metrics.metrics.' . $key . '.title');
+        $description = __('resource.user.widgets.user_activity_metrics.metrics.' . $key . '.description');
+
+        $stat = Stat::make($label, number_format($value))
+            ->description($description)
+            ->icon($icon)
+            ->color($color);
+
+        if ($growth) {
+            $valueText = $growth['value'] >= 0 ? '+' . $growth['value'] : (string) $growth['value'];
+
+            $stat->description("{$description} | Growth: {$valueText}% vs prev")
+                ->descriptionIcon($growth['icon'])
+                ->extraAttributes([
+                    'class' => 'text-' . $growth['color'] . '-600',
+                ]);
+        }
+
+        if ($chart) {
+            $stat->chart($chart);
+        }
+
+        return $stat;
     }
 }

@@ -13,12 +13,15 @@ use App\Filament\Resources\UserResource\Widgets\{
 };
 use App\Models\User;
 use Filament\Actions;
+use Filament\Pages\Concerns\ExposesTableToWidgets;
 use Filament\Resources\Components\Tab;
 use Filament\Resources\Pages\ListRecords;
 use Illuminate\Database\Eloquent\Builder;
 
 class ListUsers extends ListRecords
 {
+    use ExposesTableToWidgets;
+
     protected static string $resource = UserResource::class;
 
     /**
@@ -49,6 +52,10 @@ class ListUsers extends ListRecords
         $tabs = [
             'all' => Tab::make(__('resource.user.tabs.all'))
                 ->icon('heroicon-o-users'),
+
+            'is_active' => Tab::make(__('resource.user.tabs.is_active'))
+                ->icon('heroicon-o-user-circle')
+                ->modifyQueryUsing(fn(Builder $query) => $query->where('is_active', true)),
 
             'never_logged_in' => Tab::make(__('resource.user.tabs.never_logged_in'))
                 ->icon('heroicon-o-clock')

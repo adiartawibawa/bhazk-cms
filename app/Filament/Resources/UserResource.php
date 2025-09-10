@@ -5,7 +5,9 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\UserResource\Pages;
 use App\Models\Role;
 use App\Models\User;
+use Carbon\Carbon;
 use Filament\Forms;
+use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -15,6 +17,7 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Enums\FiltersLayout;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -190,6 +193,32 @@ class UserResource extends Resource
                     ->searchable(),
             ])
             ->filters([
+                Tables\Filters\Filter::make('date_range')
+                    ->form([
+                        DatePicker::make('start_date')
+                            ->label(__('resource.user.filters.start_date'))->default(now()->subDays(30)),
+                        DatePicker::make('end_date')
+                            ->label(__('resource.user.filters.end_date'))->default(now()),
+                    ])->columns(2)
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query
+                            ->when($data['start_date'], fn($q, $date) => $q->whereDate('created_at', '>=', $date))
+                            ->when($data['end_date'], fn($q, $date) => $q->whereDate('created_at', '<=', $date));
+                    })
+                    ->indicateUsing(function (array $data): array {
+                        $indicators = [];
+
+                        if ($data['start_date'] ?? null) {
+                            $indicators['start_date'] = __('resource.user.filters.start_date') . ': ' . Carbon::parse($data['start_date'])->toFormattedDateString();
+                        }
+
+                        if ($data['end_date'] ?? null) {
+                            $indicators['end_date'] = __('resource.user.filters.end_date') . ': ' . Carbon::parse($data['end_date'])->toFormattedDateString();
+                        }
+
+                        return $indicators;
+                    }),
+
                 Tables\Filters\TrashedFilter::make(),
 
                 Tables\Filters\SelectFilter::make('roles')
@@ -198,14 +227,7 @@ class UserResource extends Resource
                     ->preload()
                     ->label(__('resource.user.filters.role')),
 
-                Tables\Filters\Filter::make('is_active')
-                    ->label(__('resource.user.filters.active_users'))
-                    ->query(fn(Builder $query) => $query->where('is_active', true)),
-
-                Tables\Filters\Filter::make('never_logged_in')
-                    ->label(__('resource.user.filters.never_logged_in'))
-                    ->query(fn(Builder $query) => $query->whereNull('last_login_at')),
-            ])
+            ], layout: FiltersLayout::AboveContentCollapsible)->filtersFormColumns(3)
             ->actions([
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),

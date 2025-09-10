@@ -45,6 +45,8 @@ return [
             'role'            => 'Filter berdasarkan Peran',
             'active_users'    => 'Pengguna Aktif',
             'never_logged_in' => 'Belum Pernah Masuk',
+            'start_date'      => 'Tanggal Awal',
+            'end_date'        => 'Tanggal Akhir',
         ],
         'actions' => [
             'create_role' => [
@@ -55,6 +57,7 @@ return [
         'tabs' => [
             'all'             => 'Semua Pengguna',
             'never_logged_in' => 'Belum Pernah Masuk',
+            'is_active'       => 'User Aktif',
         ],
         'view' => [
             'sections' => [
@@ -142,6 +145,7 @@ return [
                     '7d'  => '7 Hari Terakhir',
                     '30d' => '30 Hari Terakhir',
                     '90d' => '90 Hari Terakhir',
+                    'custom' => 'Rentang Kustom',
                 ],
                 'dataset' => [
                     'label' => 'Registrasi Baru',

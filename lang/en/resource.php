@@ -45,6 +45,8 @@ return [
             'role' => 'Filter by Role',
             'active_users' => 'Active Users',
             'never_logged_in' => 'Never Logged In',
+            'start_date'      => 'Start Date',
+            'end_date'        => 'End Date',
         ],
         'actions' => [
             'create_role' => [
@@ -55,6 +57,7 @@ return [
         'tabs' => [
             'all'             => 'All Users',
             'never_logged_in' => 'Never Logged In',
+            'is_active'       => 'Active Users',
         ],
         'view' => [
             'sections' => [
@@ -142,6 +145,7 @@ return [
                     '7d'  => 'Last 7 Days',
                     '30d' => 'Last 30 Days',
                     '90d' => 'Last 90 Days',
+                    'custom' => 'Custom Range',
                 ],
                 'dataset' => [
                     'label' => 'New Registrations',
