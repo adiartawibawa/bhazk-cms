@@ -24,7 +24,7 @@ class EditContent extends EditRecord
             Actions\ForceDeleteAction::make(),
             Actions\RestoreAction::make(),
             Actions\Action::make('revisions')
-                ->label('Revisions')
+                ->label(__('resource.content.edit.actions.revisions'))
                 ->icon('heroicon-o-clock')
                 ->url(fn() => ContentResource::getUrl('revisions', ['record' => $this->record])),
         ];

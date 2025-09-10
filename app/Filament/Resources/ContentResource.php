@@ -7,11 +7,15 @@ use App\Filament\Resources\ContentResource\Pages;
 use App\Filament\Resources\ContentResource\RelationManagers;
 use App\Models\Content;
 use App\Models\ContentType;
+use Carbon\Carbon;
 use Filament\Forms;
+use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Form;
 use Filament\Resources\Concerns\Translatable;
 use Filament\Resources\Resource;
+use Filament\Support\Enums\MaxWidth;
 use Filament\Tables;
+use Filament\Tables\Enums\FiltersLayout;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -24,8 +28,24 @@ class ContentResource extends Resource
     use BuildsDynamicFields;
 
     protected static ?string $model = Content::class;
+
     protected static ?string $navigationIcon = 'heroicon-o-pencil';
-    protected static ?string $navigationGroup = 'Content Management';
+
+    public static function getNavigationGroup(): ?string
+    {
+        return __('resource.content.navigation.group');
+    }
+
+    public static function getNavigationLabel(): string
+    {
+        return __('resource.content.navigation.label');
+    }
+
+    public static function getPluralLabel(): ?string
+    {
+        return __('resource.content.navigation.label');
+    }
+
     protected static ?int $navigationSort = 3;
 
     public static function form(Form $form): Form
@@ -33,56 +53,55 @@ class ContentResource extends Resource
         return $form
             ->schema([
                 // Section 1: Content Information
-                Forms\Components\Section::make('Content Information')
+                Forms\Components\Section::make(__('resource.content.sections.information.label'))
+                    ->description(__('resource.content.sections.information.description'))
                     ->schema([
                         Forms\Components\Grid::make(2)
                             ->schema([
                                 Forms\Components\Select::make('content_type_id')
-                                    ->label('Content Type')
+                                    ->label(__('resource.content.fields.content_type_id'))
                                     ->options(ContentType::query()->pluck('name', 'id'))
                                     ->required()
                                     ->searchable()
                                     ->preload()
                                     ->reactive()
-                                    ->afterStateUpdated(function ($state, callable $set) {
-                                        $set('body', []);
-                                    }),
+                                    ->afterStateUpdated(fn($state, callable $set) => $set('body', [])),
 
                                 Forms\Components\Select::make('status')
-                                    ->label('Status')
+                                    ->label(__('resource.content.fields.status'))
                                     ->options([
-                                        Content::STATUS_DRAFT => 'Draft',
-                                        Content::STATUS_PUBLISHED => 'Published',
-                                        Content::STATUS_ARCHIVED => 'Archived',
+                                        Content::STATUS_DRAFT     => __('resource.content.options.status.draft'),
+                                        Content::STATUS_PUBLISHED => __('resource.content.options.status.published'),
+                                        Content::STATUS_ARCHIVED  => __('resource.content.options.status.archived'),
                                     ])
                                     ->default(Content::STATUS_DRAFT)
                                     ->required()
                                     ->reactive(),
 
                                 Forms\Components\TextInput::make('title')
-                                    ->label('Title')
+                                    ->label(__('resource.content.fields.title'))
                                     ->required()
                                     ->maxLength(255)
                                     ->live(onBlur: true)
                                     ->afterStateUpdated(function ($state, $set, $operation) {
-                                        if ($operation === 'create' || $operation === 'edit') {
+                                        if (in_array($operation, ['create', 'edit'])) {
                                             $set('slug', Str::slug($state));
                                         }
                                     }),
 
                                 Forms\Components\TextInput::make('slug')
-                                    ->label('Slug')
+                                    ->label(__('resource.content.fields.slug'))
                                     ->required()
                                     ->maxLength(255)
                                     ->unique(ignoreRecord: true)
                                     ->disabled(fn($operation) => $operation === 'edit'),
 
                                 Forms\Components\DateTimePicker::make('published_at')
-                                    ->label('Publish Date')
+                                    ->label(__('resource.content.fields.published_at'))
                                     ->hidden(fn($get) => $get('status') !== Content::STATUS_PUBLISHED),
 
                                 Forms\Components\Select::make('author_id')
-                                    ->label('Author')
+                                    ->label(__('resource.content.fields.author'))
                                     ->relationship('author', 'username')
                                     ->default(Auth::id())
                                     ->required()
@@ -90,7 +109,7 @@ class ContentResource extends Resource
                                     ->preload(),
 
                                 Forms\Components\Select::make('editor_id')
-                                    ->label('Editor')
+                                    ->label(__('resource.content.fields.editor'))
                                     ->relationship('editor', 'username')
                                     ->searchable()
                                     ->preload()
@@ -99,80 +118,68 @@ class ContentResource extends Resource
                     ])
                     ->collapsible(),
 
-                // Section 2: Content Body (Dynamic Fields)
-                Forms\Components\Section::make('Content Body')
-                    ->schema(function (Forms\Get $get) {
-                        $type = ContentType::find($get('content_type_id'));
-                        return self::buildDynamicSchema($type);
-                    })
+                // Section 2: Content Body
+                Forms\Components\Section::make(__('resource.content.sections.body.label'))
+                    ->description(__('resource.content.sections.body.description'))
+                    ->schema(fn(Forms\Get $get) => self::buildDynamicSchema(ContentType::find($get('content_type_id'))))
                     ->columnSpanFull()
                     ->hidden(fn(Forms\Get $get) => empty($get('content_type_id')))
                     ->collapsible(),
 
                 // Section 3: Excerpt and Metadata
-                Forms\Components\Section::make('Summary & Metadata')
+                Forms\Components\Section::make(__('resource.content.sections.summary.label'))
+                    ->description(__('resource.content.sections.summary.description'))
                     ->schema([
                         Forms\Components\Textarea::make('excerpt')
-                            ->label('Excerpt')
+                            ->label(__('resource.content.fields.excerpt'))
                             ->rows(3)
                             ->maxLength(500)
                             ->columnSpanFull(),
 
                         Forms\Components\KeyValue::make('metadata')
-                            ->label('Metadata')
+                            ->label(__('resource.content.fields.metadata'))
                             ->keyLabel('Key')
                             ->valueLabel('Value')
                             ->columnSpanFull(),
                     ])
-                    ->collapsible()
-                    ->columns(1),
+                    ->collapsible(),
 
                 // Section 4: Content Settings
-                Forms\Components\Section::make('Content Settings')
+                Forms\Components\Section::make(__('resource.content.sections.settings.label'))
+                    ->description(__('resource.content.sections.settings.description'))
                     ->schema([
                         Forms\Components\Grid::make(2)
                             ->schema([
                                 Forms\Components\Toggle::make('featured')
-                                    ->label('Featured Content')
+                                    ->label(__('resource.content.fields.featured'))
                                     ->default(false),
 
                                 Forms\Components\Toggle::make('commentable')
-                                    ->label('Allow Comments')
+                                    ->label(__('resource.content.fields.commentable'))
                                     ->default(true),
                             ]),
                     ])
                     ->collapsible(),
 
-                // Section 5: Categories & Tags
-                Forms\Components\Section::make('Categorization')
+                // Section 5: Categorization
+                Forms\Components\Section::make(__('resource.content.sections.categorization.label'))
+                    ->description(__('resource.content.sections.categorization.description'))
                     ->schema([
                         Forms\Components\Grid::make(2)
                             ->schema([
                                 Forms\Components\Select::make('categories')
-                                    ->label('Categories')
+                                    ->label(__('resource.content.fields.categories'))
                                     ->relationship('categories', 'name')
                                     ->multiple()
                                     ->searchable()
-                                    ->preload()
-                                    ->createOptionForm([
-                                        Forms\Components\TextInput::make('name')
-                                            ->required(),
-                                        Forms\Components\Toggle::make('is_active')
-                                            ->default(true),
-                                    ]),
+                                    ->preload(),
 
                                 Forms\Components\Select::make('tags')
-                                    ->label('Tags')
+                                    ->label(__('resource.content.fields.tags'))
                                     ->relationship('tags', 'name')
                                     ->multiple()
                                     ->searchable()
-                                    ->preload()
-                                    ->createOptionForm([
-                                        Forms\Components\TextInput::make('name')
-                                            ->required(),
-                                        Forms\Components\Toggle::make('is_active')
-                                            ->default(true),
-                                    ]),
+                                    ->preload(),
                             ]),
                     ])
                     ->collapsible(),
@@ -183,177 +190,178 @@ class ContentResource extends Resource
     {
         return $table
             ->columns([
-                // Title Column
                 Tables\Columns\TextColumn::make('title')
-                    ->label('Title')
+                    ->label(__('resource.content.columns.title'))
                     ->searchable()
                     ->sortable()
-                    ->limit(50)
-                    ->tooltip(fn(Content $record) => $record->title),
+                    ->limit(50),
 
-                // Content Type Column
                 Tables\Columns\TextColumn::make('contentType.name')
-                    ->label('Type')
+                    ->label(__('resource.content.columns.type'))
                     ->sortable()
                     ->searchable()
                     ->badge()
                     ->color('gray'),
 
-                // Status Column
                 Tables\Columns\BadgeColumn::make('status')
-                    ->label('Status')
+                    ->label(__('resource.content.columns.status'))
                     ->colors([
                         'warning' => Content::STATUS_DRAFT,
                         'success' => Content::STATUS_PUBLISHED,
-                        'danger' => Content::STATUS_ARCHIVED,
+                        'danger'  => Content::STATUS_ARCHIVED,
                     ])
                     ->sortable(),
 
-                // Author Column
                 Tables\Columns\TextColumn::make('author.username')
-                    ->label('Author')
+                    ->label(__('resource.content.columns.author'))
                     ->sortable()
-                    ->searchable()
-                    ->toggleable(),
+                    ->searchable(),
 
-                // Featured Column
                 Tables\Columns\IconColumn::make('featured')
-                    ->label('Featured')
+                    ->label(__('resource.content.columns.featured'))
                     ->boolean()
-                    ->sortable()
-                    ->toggleable(),
+                    ->sortable(),
 
-                // Published Date Column
                 Tables\Columns\TextColumn::make('published_at')
-                    ->label('Published')
+                    ->label(__('resource.content.columns.published'))
                     ->dateTime()
-                    ->sortable()
-                    ->toggleable(),
+                    ->sortable(),
 
-                // Comment Count Column
-                Tables\Columns\TextColumn::make('comment_count')
-                    ->label('Comments')
+                Tables\Columns\TextColumn::make('comments_count')
+                    ->label(__('resource.content.columns.comments'))
+                    ->counts('comments')
                     ->numeric()
-                    ->sortable()
-                    ->toggleable(),
+                    ->sortable(),
 
-                // Commentable Column
                 Tables\Columns\IconColumn::make('commentable')
-                    ->label('Commentable')
+                    ->label(__('resource.content.columns.commentable'))
                     ->boolean()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->sortable(),
 
-                // Revisions Count Column
                 Tables\Columns\TextColumn::make('revisions_count')
-                    ->label('Revisions')
+                    ->label(__('resource.content.columns.revisions'))
                     ->counts('revisions')
                     ->numeric()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->sortable(),
 
-                // Created At Column
                 Tables\Columns\TextColumn::make('created_at')
-                    ->label('Created')
+                    ->label(__('resource.content.columns.created'))
                     ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->sortable(),
 
-                // Updated At Column
                 Tables\Columns\TextColumn::make('updated_at')
-                    ->label('Updated')
+                    ->label(__('resource.content.columns.updated'))
                     ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->sortable(),
             ])
             ->filters([
-                // Trashed Filter
+                Tables\Filters\Filter::make('date_range')
+                    ->form([
+                        DatePicker::make('start_date')
+                            ->label(__('resource.content.filters.start_date'))->default(now()->subDays(30)),
+                        DatePicker::make('end_date')
+                            ->label(__('resource.content.filters.end_date'))->default(now()),
+                    ])->columns(2)
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query
+                            ->when($data['start_date'], fn($q, $date) => $q->whereDate('created_at', '>=', $date))
+                            ->when($data['end_date'], fn($q, $date) => $q->whereDate('created_at', '<=', $date));
+                    })
+                    ->indicateUsing(function (array $data): array {
+                        $indicators = [];
+
+                        if ($data['start_date'] ?? null) {
+                            $indicators['start_date'] = __('resource.content.filters.start_date') . ': ' . Carbon::parse($data['start_date'])->toFormattedDateString();
+                        }
+
+                        if ($data['end_date'] ?? null) {
+                            $indicators['end_date'] = __('resource.content.filters.end_date') . ': ' . Carbon::parse($data['end_date'])->toFormattedDateString();
+                        }
+
+                        return $indicators;
+                    }),
+
                 Tables\Filters\TrashedFilter::make(),
 
-                // Content Type Filter
                 Tables\Filters\SelectFilter::make('content_type_id')
-                    ->label('Content Type')
+                    ->label(__('resource.content.filters.content_type'))
                     ->relationship('contentType', 'name')
                     ->searchable()
                     ->preload(),
 
-                // Status Filter
                 Tables\Filters\SelectFilter::make('status')
-                    ->label('Status')
+                    ->label(__('resource.content.filters.status'))
                     ->options([
-                        Content::STATUS_DRAFT => 'Draft',
-                        Content::STATUS_PUBLISHED => 'Published',
-                        Content::STATUS_ARCHIVED => 'Archived',
+                        Content::STATUS_DRAFT     => __('resource.content.options.status.draft'),
+                        Content::STATUS_PUBLISHED => __('resource.content.options.status.published'),
+                        Content::STATUS_ARCHIVED  => __('resource.content.options.status.archived'),
                     ]),
 
-                // Author Filter
                 Tables\Filters\SelectFilter::make('author_id')
-                    ->label('Author')
+                    ->label(__('resource.content.filters.author'))
                     ->relationship('author', 'username')
                     ->searchable()
                     ->preload(),
 
-                // Featured Filter
                 Tables\Filters\Filter::make('featured')
-                    ->label('Featured Content')
+                    ->label(__('resource.content.filters.featured'))
                     ->toggle(),
 
-                // Published Filter
                 Tables\Filters\Filter::make('published')
-                    ->label('Published Content')
+                    ->label(__('resource.content.filters.published'))
                     ->query(fn(Builder $query) => $query->published()),
 
-                // Needs Review Filter
                 Tables\Filters\Filter::make('needs_review')
-                    ->label('Needs Review')
+                    ->label(__('resource.content.filters.needs_review'))
                     ->query(fn(Builder $query) => $query->where('status', Content::STATUS_DRAFT)),
-            ])
+
+            ], layout: FiltersLayout::Modal)
+            ->filtersFormWidth(MaxWidth::FourExtraLarge)
             ->actions([
-                // View Action
-                Tables\Actions\ViewAction::make(),
+                Tables\Actions\ViewAction::make()
+                    ->label(__('resource.content.actions.view')),
 
-                // Edit Action
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\EditAction::make()
+                    ->label(__('resource.content.actions.edit')),
 
-                // Revisions Action
                 Tables\Actions\Action::make('revisions')
-                    ->label('Revisions')
+                    ->label(__('resource.content.actions.revisions'))
                     ->icon('heroicon-o-clock')
                     ->url(fn(Content $record) => ContentResource::getUrl('revisions', ['record' => $record])),
 
-                // Delete Action
-                Tables\Actions\DeleteAction::make(),
+                Tables\Actions\DeleteAction::make()
+                    ->label(__('resource.content.actions.delete')),
 
-                // Force Delete Action
-                Tables\Actions\ForceDeleteAction::make(),
+                Tables\Actions\ForceDeleteAction::make()
+                    ->label(__('resource.content.actions.force_delete')),
 
-                // Restore Action
-                Tables\Actions\RestoreAction::make(),
+                Tables\Actions\RestoreAction::make()
+                    ->label(__('resource.content.actions.restore')),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    // Delete Bulk Action
-                    Tables\Actions\DeleteBulkAction::make(),
+                    Tables\Actions\DeleteBulkAction::make()
+                        ->label(__('resource.content.actions.delete')),
 
-                    // Force Delete Bulk Action
-                    Tables\Actions\ForceDeleteBulkAction::make(),
+                    Tables\Actions\ForceDeleteBulkAction::make()
+                        ->label(__('resource.content.actions.force_delete')),
 
-                    // Restore Bulk Action
-                    Tables\Actions\RestoreBulkAction::make(),
+                    Tables\Actions\RestoreBulkAction::make()
+                        ->label(__('resource.content.actions.restore')),
 
-                    // Publish Bulk Action
                     Tables\Actions\BulkAction::make('publish')
-                        ->label('Publish Selected')
+                        ->label(__('resource.content.actions.publish'))
                         ->action(fn($records) => $records->each->update([
-                            'status' => Content::STATUS_PUBLISHED,
-                            'published_at' => now()
+                            'status'       => Content::STATUS_PUBLISHED,
+                            'published_at' => now(),
                         ]))
                         ->deselectRecordsAfterCompletion()
                         ->requiresConfirmation(),
                 ]),
             ])
             ->emptyStateActions([
-                Tables\Actions\CreateAction::make(),
+                Tables\Actions\CreateAction::make()
+                    ->label(__('resource.content.actions.create')),
             ])
             ->defaultSort('created_at', 'desc')
             ->persistFiltersInSession()
@@ -370,10 +378,10 @@ class ContentResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListContents::route('/'),
-            'create' => Pages\CreateContent::route('/create'),
-            'view' => Pages\ViewContent::route('/{record}'),
-            'edit' => Pages\EditContent::route('/{record}/edit'),
+            'index'     => Pages\ListContents::route('/'),
+            'create'    => Pages\CreateContent::route('/create'),
+            'view'      => Pages\ViewContent::route('/{record}'),
+            'edit'      => Pages\EditContent::route('/{record}/edit'),
             'revisions' => Pages\ContentRevisions::route('/{record}/revisions'),
         ];
     }
@@ -381,9 +389,7 @@ class ContentResource extends Resource
     public static function getEloquentQuery(): Builder
     {
         return parent::getEloquentQuery()
-            ->withoutGlobalScopes([
-                SoftDeletingScope::class,
-            ])
+            ->withoutGlobalScopes([SoftDeletingScope::class])
             ->with(['contentType', 'author', 'editor', 'revisions'])
             ->withCount(['comments', 'revisions']);
     }

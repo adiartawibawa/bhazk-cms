@@ -184,6 +184,151 @@ return [
         ],
     ],
 
+    'content' => [
+        'navigation' => [
+            'group' => 'Manajemen Konten',
+            'label' => 'Konten',
+        ],
+        'title' => 'Pengaturan Konten',
+
+        'sections' => [
+            'information' => [
+                'label' => 'Informasi Konten',
+                'description' => 'Detail dasar mengenai konten Anda',
+            ],
+            'body' => [
+                'label' => 'Isi Konten',
+                'description' => 'Bidang utama untuk menulis konten',
+            ],
+            'summary' => [
+                'label' => 'Ringkasan & Metadata',
+                'description' => 'Ringkasan singkat dan metadata konten',
+            ],
+            'settings' => [
+                'label' => 'Pengaturan Konten',
+                'description' => 'Konfigurasi opsi tambahan',
+            ],
+            'categorization' => [
+                'label' => 'Kategorisasi',
+                'description' => 'Kelola kategori dan tag untuk konten',
+            ],
+        ],
+
+        'fields' => [
+            'content_type_id'   => 'Tipe Konten',
+            'status'            => 'Status',
+            'title'             => 'Judul',
+            'slug'              => 'Slug',
+            'published_at'      => 'Tanggal Publikasi',
+            'author'            => 'Penulis',
+            'editor'            => 'Editor',
+            'excerpt'           => 'Ringkasan',
+            'metadata'          => 'Metadata',
+            'featured'          => 'Konten Unggulan',
+            'commentable'       => 'Izinkan Komentar',
+            'categories'        => 'Kategori',
+            'tags'              => 'Tag',
+        ],
+
+        'options' => [
+            'status' => [
+                'draft'     => 'Draf',
+                'published' => 'Dipublikasikan',
+                'archived'  => 'Diarsipkan',
+            ],
+        ],
+
+        'filters' => [
+            'start_date'   => 'Tanggal Mulai',
+            'end_date'     => 'Tanggal Selesai',
+            'status'       => 'Status',
+            'author'       => 'Penulis',
+            'featured'     => 'Konten Unggulan',
+            'published'    => 'Konten Dipublikasikan',
+            'needs_review' => 'Perlu Ditinjau',
+            'content_type' => 'Tipe Konten',
+        ],
+
+        'actions' => [
+            'view'        => 'Lihat',
+            'edit'        => 'Ubah',
+            'delete'      => 'Hapus',
+            'force_delete' => 'Hapus Permanen',
+            'restore'     => 'Pulihkan',
+            'revisions'   => 'Revisi',
+            'publish'     => 'Publikasikan yang Dipilih',
+            'create'      => 'Buat Konten',
+        ],
+
+        'columns' => [
+            'title'       => 'Judul',
+            'type'        => 'Tipe',
+            'status'      => 'Status',
+            'author'      => 'Penulis',
+            'featured'    => 'Unggulan',
+            'published'   => 'Dipublikasikan',
+            'comments'    => 'Komentar',
+            'commentable' => 'Dapat Dikomentari',
+            'revisions'   => 'Revisi',
+            'created'     => 'Dibuat',
+            'updated'     => 'Diperbarui',
+        ],
+
+        'tabs' => [
+            'all' => 'Semua',
+            'draft' => 'Draf',
+            'published' => 'Terbit',
+            'archived' => 'Arsip',
+            'featured' => 'Unggulan',
+            'commentable' => 'Bisa Dikomentari',
+            'needs_review' => 'Perlu Ditinjau',
+        ],
+
+        'view' => [
+            'actions' => [
+                'revisions' => 'Revisi',
+            ],
+        ],
+
+        'edit' => [
+            'actions' => [
+                'revisions' => 'Revisi',
+            ],
+        ],
+
+        'revisions' => [
+            'actions' => [
+                'back' => 'Kembali ke Konten',
+                'view' => 'Lihat',
+                'restore' => 'Pulihkan',
+            ],
+            'title' => 'Revisi untuk: :title',
+            'breadcrumb' => 'Revisi',
+            'columns' => [
+                'version' => 'Versi',
+                'author' => 'Penulis',
+                'change_type' => 'Jenis Perubahan',
+                'description' => 'Deskripsi',
+                'date' => 'Tanggal',
+                'autosave' => 'Simpan Otomatis',
+            ],
+            'modal' => [
+                'view_heading' => 'Revisi v:version',
+                'restore_heading' => 'Pulihkan Revisi',
+                'restore_description' => 'Apakah Anda yakin ingin memulihkan revisi ini? Konten saat ini akan diganti dengan versi ini.',
+            ],
+            'empty' => [
+                'heading' => 'Belum ada revisi',
+                'description' => 'Revisi akan muncul di sini ketika Anda membuat perubahan pada konten.',
+            ],
+            'restore_message' => 'Dipulihkan dari versi :version',
+            'notifications' => [
+                'success' => 'Konten berhasil dipulihkan dari versi :version',
+                'error' => 'Gagal memulihkan revisi: :message',
+            ],
+        ],
+    ],
+
     'settings' => [
         'navigation' => [
             'group' => 'Sistem',

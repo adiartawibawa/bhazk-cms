@@ -19,7 +19,7 @@ class ViewContent extends ViewRecord
             Actions\LocaleSwitcher::make(),
             Actions\EditAction::make(),
             Actions\Action::make('revisions')
-                ->label('Revisions')
+                ->label(__('resource.content.view.actions.revisions'))
                 ->icon('heroicon-o-clock')
                 ->url(fn() => ContentResource::getUrl('revisions', ['record' => $this->record])),
             Actions\DeleteAction::make(),

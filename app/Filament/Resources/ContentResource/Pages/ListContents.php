@@ -12,7 +12,9 @@ use App\Filament\Resources\ContentResource\Widgets\ContentStatusChart;
 use App\Filament\Resources\ContentResource\Widgets\ContentTypeDistributionChart;
 use App\Filament\Resources\ContentResource\Widgets\RecentCommentsTable;
 use App\Filament\Resources\ContentResource\Widgets\RecentContentTable;
+use App\Models\Content;
 use Filament\Actions;
+use Filament\Resources\Components\Tab;
 use Filament\Resources\Pages\ListRecords;
 use Filament\Resources\Pages\ListRecords\Concerns\Translatable;
 
@@ -48,6 +50,45 @@ class ListContents extends ListRecords
             ContentPublishingTrendChart::class,
             ContentTypeDistributionChart::class,
             RecentCommentsTable::class,
+        ];
+    }
+
+    public function getTabs(): array
+    {
+        return [
+            'all' => Tab::make()
+                ->label(__('resource.content.tabs.all'))
+                ->icon('heroicon-o-rectangle-stack'),
+
+            'draft' => Tab::make()
+                ->label(__('resource.content.tabs.draft'))
+                ->modifyQueryUsing(fn($query) => $query->where('status', Content::STATUS_DRAFT))
+                ->icon('heroicon-o-pencil'),
+
+            'published' => Tab::make()
+                ->label(__('resource.content.tabs.published'))
+                ->modifyQueryUsing(fn($query) => $query->where('status', Content::STATUS_PUBLISHED))
+                ->icon('heroicon-o-check-circle'),
+
+            'archived' => Tab::make()
+                ->label(__('resource.content.tabs.archived'))
+                ->modifyQueryUsing(fn($query) => $query->where('status', Content::STATUS_ARCHIVED))
+                ->icon('heroicon-o-archive-box'),
+
+            'featured' => Tab::make()
+                ->label(__('resource.content.tabs.featured'))
+                ->modifyQueryUsing(fn($query) => $query->where('featured', true))
+                ->icon('heroicon-o-star'),
+
+            'commentable' => Tab::make()
+                ->label(__('resource.content.tabs.commentable'))
+                ->modifyQueryUsing(fn($query) => $query->where('commentable', true))
+                ->icon('heroicon-o-chat-bubble-left-ellipsis'),
+
+            'needs_review' => Tab::make()
+                ->label(__('resource.content.tabs.needs_review'))
+                ->modifyQueryUsing(fn($query) => $query->where('status', Content::STATUS_DRAFT))
+                ->icon('heroicon-o-exclamation-circle'),
         ];
     }
 }

@@ -32,19 +32,19 @@ class ContentRevisions extends Page implements HasTable, HasForms
     {
         return [
             Actions\Action::make('back')
-                ->label('Back to Content')
+                ->label(__('resource.content.revisions.actions.back'))
                 ->url(fn() => ContentResource::getUrl('edit', ['record' => $this->record])),
         ];
     }
 
     public function getTitle(): string|Htmlable
     {
-        return "Revisions for: {$this->record->title}";
+        return __('resource.content.revisions.title', ['title' => $this->record->title]);
     }
 
     public function getBreadcrumb(): string
     {
-        return 'Revisions';
+        return __('resource.content.revisions.breadcrumb');
     }
 
     public function table(Table $table): Table
@@ -53,150 +53,104 @@ class ContentRevisions extends Page implements HasTable, HasForms
             ->query(ContentRevision::where('content_id', $this->record->id))
             ->columns([
                 Tables\Columns\TextColumn::make('version')
-                    ->label('Version')
+                    ->label(__('resource.content.revisions.columns.version'))
                     ->numeric()
                     ->sortable()
                     ->formatStateUsing(fn($state) => 'v' . $state),
 
                 Tables\Columns\TextColumn::make('author.username')
-                    ->label('Author')
+                    ->label(__('resource.content.revisions.columns.author'))
                     ->searchable()
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('change_type')
-                    ->label('Change Type')
+                    ->label(__('resource.content.revisions.columns.change_type'))
                     ->badge()
                     ->colors([
                         'primary' => 'created',
                         'success' => 'update',
                         'warning' => 'status_change',
-                        'info' => 'rollback',
+                        'info'    => 'rollback',
                     ])
                     ->formatStateUsing(fn($state) => ucfirst(str_replace('_', ' ', $state))),
 
                 Tables\Columns\TextColumn::make('change_description')
-                    ->label('Description')
+                    ->label(__('resource.content.revisions.columns.description'))
                     ->limit(50),
 
                 Tables\Columns\TextColumn::make('created_at')
-                    ->label('Date')
+                    ->label(__('resource.content.revisions.columns.date'))
                     ->dateTime()
                     ->sortable(),
 
                 Tables\Columns\IconColumn::make('is_autosave')
-                    ->label('Autosave')
+                    ->label(__('resource.content.revisions.columns.autosave'))
                     ->boolean()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->actions([
                 Tables\Actions\Action::make('view')
-                    ->label('View')
+                    ->label(__('resource.content.revisions.actions.view'))
                     ->icon('heroicon-o-eye')
-                    ->modalHeading(fn(ContentRevision $record) => "Revision v{$record->version}")
+                    ->modalHeading(fn(ContentRevision $record) => __('resource.content.revisions.modal.view_heading', ['version' => $record->version]))
                     ->modalContent(fn(ContentRevision $record) => view('filament.resources.content-resource.pages.content-revision-view', [
                         'revision' => $record,
                     ])),
 
                 Tables\Actions\Action::make('restore')
-                    ->label('Restore')
+                    ->label(__('resource.content.revisions.actions.restore'))
                     ->icon('heroicon-o-arrow-path')
                     ->requiresConfirmation()
-                    ->modalHeading('Restore Revision')
-                    ->modalDescription('Are you sure you want to restore this revision? The current content will be replaced with this version.')
-                    ->action(function (ContentRevision $record) {
-                        try {
-                            // Dapatkan content yang akan di-update (buat baru)
-                            $content = Content::findOrFail($record->content_id);
-
-                            // Simpan data lama untuk diff comparison
-                            $oldData = $content->getAttributes();
-
-                            // Update content dengan data dari revision
-                            $content->update([
-                                'title' => $record->title,
-                                'body' => $record->body,
-                                'excerpt' => $record->excerpt,
-                                'metadata' => $record->metadata,
-                                'editor_id' => Auth::id(),
-                            ]);
-
-                            // Buat revision baru untuk mencatat rollback
-                            $newVersion = $content->current_version + 1;
-
-                            ContentRevision::create([
-                                'content_id' => $content->id,
-                                'author_id' => Auth::id(),
-                                'version' => $newVersion,
-                                'title' => $content->title,
-                                'body' => $content->body,
-                                'excerpt' => $content->excerpt,
-                                'metadata' => $content->metadata,
-                                'change_type' => 'rollback',
-                                'change_description' => "Restored from version {$record->version}",
-                                'diff_summary' => $this->getDiffSummary($oldData, $content->getAttributes()),
-                                'is_autosave' => false,
-                            ]);
-
-                            // Update current version
-                            $content->update(['current_version' => $newVersion]);
-
-                            // Refresh table data
-                            // $this->refreshTable();
-
-                            // Show success notification
-                            Notification::make()
-                                ->title("Content restored from version {$record->version}")
-                                ->success()
-                                ->send();
-                        } catch (\Exception $e) {
-                            Notification::make()
-                                ->title("Failed to restore revision: " . $e->getMessage())
-                                ->danger()
-                                ->send();
-                        }
-                    }),
+                    ->modalHeading(__('resource.content.revisions.modal.restore_heading'))
+                    ->modalDescription(__('resource.content.revisions.modal.restore_description'))
+                    ->action(fn(ContentRevision $record) => $this->restoreRevision($record)),
             ])
             ->defaultSort('version', 'desc')
-            ->emptyStateHeading('No revisions yet')
-            ->emptyStateDescription('Revisions will appear here when you make changes to the content.');
+            ->emptyStateHeading(__('resource.content.revisions.empty.heading'))
+            ->emptyStateDescription(__('resource.content.revisions.empty.description'));
     }
 
-    private function getDiffSummary(array $oldData, array $newData): array
+    private function restoreRevision(ContentRevision $record): void
     {
-        $changes = [];
-        $significantFields = ['title', 'body', 'excerpt', 'metadata'];
+        try {
+            $content = Content::findOrFail($record->content_id);
+            $oldData = $content->getAttributes();
 
-        foreach ($significantFields as $field) {
-            $oldValue = $oldData[$field] ?? null;
-            $newValue = $newData[$field] ?? null;
+            $content->update([
+                'title'     => $record->title,
+                'body'      => $record->body,
+                'excerpt'   => $record->excerpt,
+                'metadata'  => $record->metadata,
+                'editor_id' => Auth::id(),
+            ]);
 
-            // Convert to JSON string for comparison if array
-            $oldValueCompare = is_array($oldValue) ? json_encode($oldValue) : $oldValue;
-            $newValueCompare = is_array($newValue) ? json_encode($newValue) : $newValue;
+            $newVersion = $content->current_version + 1;
 
-            if ($oldValueCompare != $newValueCompare) {
-                $changes[$field] = [
-                    'old' => $oldValue,
-                    'new' => $newValue,
-                ];
-            }
+            ContentRevision::create([
+                'content_id'       => $content->id,
+                'author_id'        => Auth::id(),
+                'version'          => $newVersion,
+                'title'            => $content->title,
+                'body'             => $content->body,
+                'excerpt'          => $content->excerpt,
+                'metadata'         => $content->metadata,
+                'change_type'      => 'rollback',
+                'change_description' => __('resource.content.revisions.restore_message', ['version' => $record->version]),
+                'diff_summary'     => $this->getDiffSummary($oldData, $content->getAttributes()),
+                'is_autosave'      => false,
+            ]);
+
+            $content->update(['current_version' => $newVersion]);
+
+            Notification::make()
+                ->title(__('resource.content.revisions.notifications.success', ['version' => $record->version]))
+                ->success()
+                ->send();
+        } catch (\Exception $e) {
+            Notification::make()
+                ->title(__('resource.content.revisions.notifications.error', ['message' => $e->getMessage()]))
+                ->danger()
+                ->send();
         }
-
-        return $changes;
-    }
-
-    // private function refreshTable(): void
-    // {
-    //     // Refresh table data setelah update
-    //     if (method_exists($this, 'getTable')) {
-    //         $this->getTable()->refresh();
-    //     }
-    // }
-
-    protected function getTableQuery()
-    {
-        return ContentRevision::where('content_id', $this->record->id)
-            ->with('author')
-            ->orderBy('version', 'desc');
     }
 }

@@ -184,6 +184,151 @@ return [
         ],
     ],
 
+    'content' => [
+        'navigation' => [
+            'group' => 'Content Management',
+            'label' => 'Content',
+        ],
+        'title' => 'Manage Content Settings',
+
+        'sections' => [
+            'information' => [
+                'label' => 'Content Information',
+                'description' => 'Basic details about your content',
+            ],
+            'body' => [
+                'label' => 'Content Body',
+                'description' => 'Main content fields',
+            ],
+            'summary' => [
+                'label' => 'Summary & Metadata',
+                'description' => 'Excerpt and metadata fields',
+            ],
+            'settings' => [
+                'label' => 'Content Settings',
+                'description' => 'Configure extra options',
+            ],
+            'categorization' => [
+                'label' => 'Categorization',
+                'description' => 'Organize content with categories and tags',
+            ],
+        ],
+
+        'fields' => [
+            'content_type_id'   => 'Content Type',
+            'status'            => 'Status',
+            'title'             => 'Title',
+            'slug'              => 'Slug',
+            'published_at'      => 'Publish Date',
+            'author'            => 'Author',
+            'editor'            => 'Editor',
+            'excerpt'           => 'Excerpt',
+            'metadata'          => 'Metadata',
+            'featured'          => 'Featured Content',
+            'commentable'       => 'Allow Comments',
+            'categories'        => 'Categories',
+            'tags'              => 'Tags',
+        ],
+
+        'options' => [
+            'status' => [
+                'draft'     => 'Draft',
+                'published' => 'Published',
+                'archived'  => 'Archived',
+            ],
+        ],
+
+        'filters' => [
+            'start_date'  => 'Start Date',
+            'end_date'    => 'End Date',
+            'status'      => 'Status',
+            'author'      => 'Author',
+            'featured'    => 'Featured Content',
+            'published'   => 'Published Content',
+            'needs_review' => 'Needs Review',
+            'content_type' => 'Content Type',
+        ],
+
+        'actions' => [
+            'view'      => 'View',
+            'edit'      => 'Edit',
+            'delete'    => 'Delete',
+            'force_delete' => 'Force Delete',
+            'restore'   => 'Restore',
+            'revisions' => 'Revisions',
+            'publish'   => 'Publish Selected',
+            'create'    => 'Create Content',
+        ],
+
+        'columns' => [
+            'title'       => 'Title',
+            'type'        => 'Type',
+            'status'      => 'Status',
+            'author'      => 'Author',
+            'featured'    => 'Featured',
+            'published'   => 'Published',
+            'comments'    => 'Comments',
+            'commentable' => 'Commentable',
+            'revisions'   => 'Revisions',
+            'created'     => 'Created',
+            'updated'     => 'Updated',
+        ],
+
+        'tabs' => [
+            'all' => 'All',
+            'draft' => 'Draft',
+            'published' => 'Published',
+            'archived' => 'Archived',
+            'featured' => 'Featured',
+            'commentable' => 'Commentable',
+            'needs_review' => 'Needs review',
+        ],
+
+        'view' => [
+            'actions' => [
+                'revisions' => 'Revisions',
+            ],
+        ],
+
+        'edit' => [
+            'actions' => [
+                'revisions' => 'Revisions',
+            ],
+        ],
+
+        'revisions' => [
+            'actions' => [
+                'back' => 'Back to Content',
+                'view' => 'View',
+                'restore' => 'Restore',
+            ],
+            'title' => 'Revisions for: :title',
+            'breadcrumb' => 'Revisions',
+            'columns' => [
+                'version' => 'Version',
+                'author' => 'Author',
+                'change_type' => 'Change Type',
+                'description' => 'Description',
+                'date' => 'Date',
+                'autosave' => 'Autosave',
+            ],
+            'modal' => [
+                'view_heading' => 'Revision v:version',
+                'restore_heading' => 'Restore Revision',
+                'restore_description' => 'Are you sure you want to restore this revision? The current content will be replaced with this version.',
+            ],
+            'empty' => [
+                'heading' => 'No revisions yet',
+                'description' => 'Revisions will appear here when you make changes to the content.',
+            ],
+            'restore_message' => 'Restored from version :version',
+            'notifications' => [
+                'success' => 'Content restored from version :version',
+                'error' => 'Failed to restore revision: :message',
+            ],
+        ],
+    ],
+
     'settings' => [
         'navigation' => [
             'group' => 'System',
