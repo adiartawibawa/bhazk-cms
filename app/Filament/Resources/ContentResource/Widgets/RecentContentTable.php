@@ -74,7 +74,7 @@ class RecentContentTable extends BaseWidget
             ])
             ->actions([
                 Tables\Actions\Action::make('edit')
-                    ->url(fn(Content $record): string => route('filament.admin.resources.contents.edit', $record))
+                    ->url(fn(Content $record): string => route('filament.backend.resources.contents.edit', $record))
                     ->icon('heroicon-o-pencil-square'),
             ]);
     }

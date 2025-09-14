@@ -57,6 +57,7 @@ class Content extends Model implements HasMedia
     protected function casts(): array
     {
         return [
+            'body' => 'array',
             'metadata' => 'array',
             'published_at' => 'datetime',
             'featured' => 'boolean',
